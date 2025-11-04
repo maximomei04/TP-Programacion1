@@ -33,9 +33,9 @@ def leer_usuarios():
     return usuarios
 
 def guardar_usuarios(usuarios):
-    """
-    Recibe la lista de listas y la guarda en usuarios.txt.
-    """
+    
+    # Recibe la lista de listas y la guarda en usuarios.txt
+
     try:
         with open(ARCHIVO_USUARIOS, 'w', encoding='utf-8') as f:
             for usuario in usuarios:
@@ -196,9 +196,24 @@ def promedio_edad_por_funcion():
             print(f"{nombre_funcion}: promedio de edad = {prom:.2f} años (sobre {len(edades)} reservas)")
             
             primeras_edades = edades[:3] 
-            print(f"   -> Primeras 3 edades en reservar: {primeras_edades}")
+            print(f"Primeras 3 edades en reservar: {primeras_edades}")
 
         except ZeroDivisionError:
             print(f"{nombre_funcion}: no hay reservas registradas para esta función.")
             
     input("Presione ENTER para continuar.")
+
+
+def topTresUsuariosMasJovenes():
+    usuarios = leer_usuarios()
+    
+    if not usuarios:
+        print("No hay usuarios registrados")
+        input("Preseione ENTER para continuar")
+        return
+    
+    usuarios.sort(key=lambda usuario:usuario[4])
+    top_3_jovenes = usuarios[:3]
+
+    print("Top 3 usuarios más jovenes")
+    Main.mostrar_matriz(top_3_jovenes,("ID Usuario", "Nombre", "Email", "Teléfono", "Edad"))
