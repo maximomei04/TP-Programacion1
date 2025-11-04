@@ -30,9 +30,7 @@ def leer_funciones():
     return funciones
 
 def guardar_funciones(funciones):
-    """
-    Recibe la lista de listas y la guarda en funciones.txt.
-    """
+    #Recibe la lista de listas y la guarda en funciones.txt.
     try:
         with open(ARCHIVO_FUNCIONES, 'w', encoding='utf-8') as f:
             for funcion in funciones:
@@ -122,10 +120,7 @@ def borrar_funcion():
 
 
 def encontrar_funciones_por_obra(id_obra_buscada, funciones):
-    """
-    Usa FILTER para encontrar todas las funciones de una obra específica.
-    (Ahora recibe 'funciones' como parámetro)
-    """
+    #Usamos filter para encontrar todas las funciones de una obra especifica.
     funciones_filtradas = list(filter(lambda f: f[1] == id_obra_buscada, funciones))
     
     print(f"\n--- Funciones encontradas para la Obra ID {id_obra_buscada} (usando FILTER) ---")
@@ -137,11 +132,8 @@ def encontrar_funciones_por_obra(id_obra_buscada, funciones):
     return funciones_filtradas
 
 def obtener_fechas_como_objetos(lista_funciones):
-    """
-    Usa MAP para convertir todas las fechas (string) en objetos datetime.
-    (Sin cambios, ya que recibía la lista como parámetro)
-    """
-    print(f"\n--- Fechas convertidas a objetos datetime (usando MAP) ---")
+    #Usamos map para convertir todas las fechas en objetos datetime.
+    print(f"\n--- Fechas convertidas a objetos datetime ---")
     if not lista_funciones:
         print("No hay fechas para convertir.")
         return
@@ -154,10 +146,7 @@ def obtener_fechas_como_objetos(lista_funciones):
         print(f"Error al convertir fechas: {e}. Asegúrese que el formato sea YYYY-MM-DD.")
 
 def encontrar_ultima_funcion(funciones):
-    """
-    Usa REDUCE para encontrar la función con la fecha más lejana.
-    (Ahora recibe 'funciones' como parámetro)
-    """
+    #Usamos reduce para encontrar la función con la fecha más lejana 
     if not funciones:
         print("\nNo hay funciones para comparar.")
         return
@@ -168,10 +157,7 @@ def encontrar_ultima_funcion(funciones):
     print(f"ID Función: {ultima[0]}, Obra: {ultima[1]}, Fecha: {ultima[2]}")
 
 def reportes_con_lambdas():
-    """
-    Esta es la función principal que se llama desde el menú.
-    Ahora lee los datos primero.
-    """
+    #función principal que se llama desde el menú. Ahora lee los datos primero.
     funciones = leer_funciones()
 
     print("=============================================")
@@ -180,9 +166,6 @@ def reportes_con_lambdas():
     
     id_obra = Main.ingreso_entero("Ingrese ID de obra para FILTRAR (ej: 1): ")
     funciones_filtradas = encontrar_funciones_por_obra(id_obra, funciones)
-  
     obtener_fechas_como_objetos(funciones_filtradas)
-
     encontrar_ultima_funcion(funciones)
-    
     input("\nPresione ENTER para continuar.")
