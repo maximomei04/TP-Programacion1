@@ -26,7 +26,7 @@ def leer_usuarios():
                         ]
                         usuarios.append(usuario)
                     except (ValueError, IndexError):
-                        print(f"Advertencia: Se omitió una línea mal formada en {ARCHIVO_USUARIOS}")
+                        print(f"Error: Se omitió una línea mal formada en {ARCHIVO_USUARIOS}")
     except FileNotFoundError:
         print(f"Nota: No se encontró {ARCHIVO_USUARIOS}, se creará uno nuevo al guardar.")
 
@@ -43,7 +43,7 @@ def guardar_usuarios(usuarios):
                 linea = ";".join(linea_items)
                 f.write(linea + "\n")
     except OSError as e:
-        print(f"Error fatal al guardar usuarios: {e}")
+        print(f"Error al guardar usuarios: {e}")
 
 
 def crear_usuario():
