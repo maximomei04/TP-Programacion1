@@ -29,9 +29,7 @@ butacas_estado = [
 
 
 def leer_reservas():
-    """
-    Lee el archivo reservas.txt y devuelve una lista de listas.
-    """
+    #Lee el archivo reservas.txt y devuelve una lista de listas
     reservas = []
     try:
         with open(ARCHIVO_RESERVAS, 'r', encoding='utf-8') as f:
@@ -52,16 +50,14 @@ def leer_reservas():
                         ]
                         reservas.append(reserva)
                     except (ValueError, IndexError):
-                        print(f"Advertencia: Se omitió una línea mal formada en {ARCHIVO_RESERVAS}")
+                        print(f"Error: Se omitió una línea mal formada en {ARCHIVO_RESERVAS}")
     except FileNotFoundError:
         print(f"Nota: No se encontró {ARCHIVO_RESERVAS}, se creará uno nuevo al guardar.")
     
     return reservas
 
 def guardar_reservas(reservas):
-    """
-    Recibe la lista de listas y la guarda en reservas.txt.
-    """
+    #Recibe la lista de listas y la guarda en reservas.txt
     try:
         with open(ARCHIVO_RESERVAS, 'w', encoding='utf-8') as f:
             for reserva in reservas:
@@ -69,7 +65,7 @@ def guardar_reservas(reservas):
                 linea = ";".join(linea_items)
                 f.write(linea + "\n")
     except OSError as e:
-        print(f"Error fatal al guardar reservas: {e}")
+        print(f"Error al guardar reservas: {e}")
 
 def butaca_valida(b):
     return re.match(r"^[A-Ha-h][1-8]$", b.strip()) is not None
@@ -152,9 +148,7 @@ def mostrar_reservas(reservas_):
     input("Presione ENTER para continuar")
 
 def init_estado_desde_reservas():
-    """
-    Función CRÍTICA: Ahora lee de reservas.txt para llenar la matriz 'butacas_estado'.
-    """
+    #lee de reservas.txt para llenar la matriz butacas_estado
     reservas = leer_reservas()
     
     f = 0
@@ -237,7 +231,7 @@ def crear_reserva():
     precio = buscar_precio(id_obra_valido)
     
     if precio is None:
-        print("Error crítico: No se encontró el precio de la obra. No se guardará la reserva.")
+        print("Error: No se encontró el precio de la obra. No se guardará la reserva.")
     else:
         total = precio * cant
         print(f"El precio de cada entrada es de ${precio}")
@@ -331,9 +325,3 @@ def borrar_reserva():
         
     mostrar_butacas()
     input("Presione ENTER para continuar.")
-
-if __name__ == "__main__":
-    init_estado_desde_reservas()
-    reservas_leidas = leer_reservas()
-    mostrar_reservas(reservas_leidas)
-    mostrar_butacas()
