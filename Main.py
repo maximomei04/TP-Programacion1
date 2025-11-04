@@ -263,7 +263,7 @@ def main():
         elif opcion == "4":  # MENÚ USUARIOS
             while True:
                 while True:
-                    opciones = 6
+                    opciones = 7
                     print()
                     print("---------------------------")
                     print("MENÚ PRINCIPAL > MENÚ USUARIOS")
@@ -274,6 +274,7 @@ def main():
                     print("[4] Borrar Usuario")
                     print("[5] Mostrar promedio de edad de Usuarios en la funcion")
                     print("[6] Usuarios con mas Reservas")
+                    print("[7] Top tres usuarios mas jovenes")
                     print("---------------------------")
                     print("[0] Volver al menú anterior")
                     print("---------------------------")
@@ -314,6 +315,8 @@ def main():
 
                 elif opcion == "6":  # Opción 6
                     usuarios_con_mas_reservas()
+                elif opcion == "7": # Opción 7
+                    topTresUsuariosMasJovenes()
 
         input("\nPresione ENTER para volver al menú.")
         print("\n\n")
@@ -321,3 +324,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
