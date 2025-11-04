@@ -2,6 +2,35 @@ import json
 from Main import *
 
 
+def mostrar_obras(archivo, continuar="Presione ENTER para continuar"):
+    try:
+        with open(archivo, encoding="UTF-8") as datos:
+            lista = json.load(datos)
+            print()
+            titulo = "OBRAS"
+            print(titulo.center(150, "-"))
+            for clave in lista[0].keys():
+                if clave == "Duracion":
+                    print(f"{clave}", end="")
+                else:
+                    print(f"{clave:<30}", end=" | ")
+            print(f'\n{"-" * 150}')
+            for diccionario in lista:
+                for dato in diccionario:
+                    if dato == "Precio":
+                        print(f"${diccionario[dato]:<30}", end=" | ")
+                    elif dato == "Duracion":
+                        print(f"{diccionario[dato]} min", end="")
+                    else:
+                        print(f"{diccionario[dato]:<30}", end=" | ")
+                print()
+            print()
+            texto = input(continuar).strip()
+            return texto
+    except (FileNotFoundError, OSError) as error:
+        print(f"Error! {error}")
+
+
 def agregar_obras(archivo):
     try:
         with open(archivo, "r", encoding="UTF-8") as datos:
@@ -57,10 +86,10 @@ def modificar_obra(archivo):
             print("No hay obras para modificar.")
             input("Presione ENTER para continuar.")
             return
-        print("\nObras actuales:")
-        for o in obras:
-            print(f'{o["ID"]} - {o["Nombre"]} - ${o["Precio"]}')
-        id_mod = input("Ingrese el ID de la obra a modificar: ").strip()
+
+        id_mod = mostrar_obras(
+            "archivos/obras.json", "Ingrese el ID de la obra a modificar: "
+        )
         while not id_mod.isnumeric():
             id_mod = input("ID inválido. Ingrese un número: ").strip()
         id_mod = int(id_mod)
@@ -114,13 +143,9 @@ def borrar_obra(archivo):
             input("Presione ENTER para continuar.")
             return
 
-        print("\nObras actuales:")
-        for o in obras:
-            print(f'{o["ID"]} - {o["Nombre"]} - ${o["Precio"]}')
-
-        id_borrar = input("Ingrese el ID de la obra a borrar: ").strip()
-        while not id_borrar.isnumeric():
-            id_borrar = input("ID inválido. Ingrese un número: ").strip()
+        id_borrar = mostrar_obras(
+            "archivos/obras.json", "Ingrese el ID de la obra a borrar: "
+        )
         id_borrar = int(id_borrar)
 
         for i, o in enumerate(obras):
@@ -140,8 +165,7 @@ def borrar_obra(archivo):
                     json.dump(obras, datos, ensure_ascii=False, indent=4)
                 return
 
-        print("No se encontró una obra con ese ID.")
-        input("Presione ENTER para continuar.")
+        input("No se encontró una obra con ese ID.\nPresione ENTER para continuar.")
 
     except (FileNotFoundError, OSError) as error:
         print(f"Error! {error}")
@@ -159,7 +183,9 @@ def estadisticas_precios_obras(archivo):
         minimo = min(precios)
         promedio = sum(precios) // len(precios)
         maximo = max(precios)
-        input(f'El precio mínimo es: {minimo}\nEl precio promedio es: {promedio}\nEl precio maximo es: {maximo}\n\nPresione ENTER para continuar')
+        input(
+            f"El precio mínimo es: {minimo}\nEl precio promedio es: {promedio}\nEl precio maximo es: {maximo}\n\nPresione ENTER para continuar"
+        )
 
     except (FileNotFoundError, OSError) as error:
         print(f"Error! {error}")

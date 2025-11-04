@@ -18,24 +18,6 @@ def mostrar_matriz(matriz, encabezados="-" * 20):
     input("Presione ENTER para continuar")
 
 
-def mostrar_lista_diccionarios(archivo):
-    try:
-        with open(archivo, encoding="UTF-8") as datos:
-            lista = json.load(datos)
-            print()
-            for clave in lista[0].keys():
-                print(f"{clave:<25}", end="")
-            print()
-            for diccionario in lista:
-                for dato in diccionario:
-                    print(f"{diccionario[dato]:<25}", end="")
-                print()
-            print()
-            input("Presione ENTER para continuar")
-    except (FileNotFoundError, OSError) as error:
-        print(f"Error! {error}")
-
-
 def limpiar_terminal():
     if os.name == "nt":
         os.system("cls")
@@ -149,22 +131,21 @@ def main():
                     break  # Volver al menú anterior
 
                 elif opcion == "1":  # Opción 1
-                    mostrar_lista_diccionarios("archivos/obras.json")
+                    mostrar_obras("archivos/obras.json")
 
                 elif opcion == "2":  # Opción 2
                     agregar_obras("archivos/obras.json")
-                    mostrar_lista_diccionarios("archivos/obras.json")
+                    mostrar_obras("archivos/obras.json")
 
                 elif opcion == "3":  # Opción 3
                     modificar_obra("archivos/obras.json")
-                    mostrar_lista_diccionarios("archivos/obras.json")
+                    mostrar_obras("archivos/obras.json")
 
                 elif opcion == "4":  # Opción 4
                     borrar_obra("archivos/obras.json")
 
                 elif opcion == "5":  # Opción 5
                     estadisticas_precios_obras("archivos/obras.json")
-
 
         elif opcion == "2":  # MENÚ FUNCIONES
             while True:
