@@ -31,18 +31,18 @@ def ingreso_entero(mensaje="Ingrese un número entero: ", vacio=False):
     while True:
         try:
             valor_ingresado = input(mensaje).strip()
-            if valor_ingresado == float or int(valor_ingresado) <= 0:
-                raise ValueError
-            elif valor_ingresado == "" and vacio == True:
-                return valor_ingresado
+            if vacio and valor_ingresado == "":
+                return ""
+
             valor_entero = int(valor_ingresado)
+
+            if valor_entero <= 0:
+                raise ValueError
             break
         except ValueError:
             print(
                 "Error: Ingreso inválido, solamente ingresar numeros enteros positivos"
             )
-        except KeyboardInterrupt:
-            exit()
         except:
             print("Error inesperado")
     return valor_entero

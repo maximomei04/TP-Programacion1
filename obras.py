@@ -74,7 +74,7 @@ def agregar_obras(archivo):
                 "ID": nuevo_id,
                 "Nombre": nombre,
                 "Precio": precio,
-                "Categoría": categoria,
+                "Categoria": categoria,
                 "Duracion": duracion,
             }
             obras.append(nueva_obra)
@@ -91,6 +91,17 @@ def agregar_obras(archivo):
         print(f"Error! {error}")
 
 
+def lista_IDs(lista_dict):
+    IDs = []
+    for i in lista_dict:
+        IDs.append(i["ID"])
+    return IDs
+
+
+def confirmacion():
+    return
+
+
 def modificar_obra(archivo):
     try:
         with open(archivo, "r", encoding="UTF-8") as datos:
@@ -104,52 +115,56 @@ def modificar_obra(archivo):
         id_mod = mostrar_obras(  # Ingreso y busqueda del ID
             "archivos/obras.json", "Ingrese el ID de la obra a modificar: ", int
         )
-        IDs = []
-        for obra in obras:
-            IDs.append(obra["ID"])
+        IDs = lista_IDs(obras)
         if id_mod not in IDs:
             input(
                 "No se encontró ninguna obra con el ID ingresado.\n\nPresione ENTER para continuar."
             )
             return
+        indice = IDs.index(id_mod)
 
         nuevo_nombre = ingreso_texto(  # Nombre
-            f"Nuevo Nombre (ENTER para dejar '{obra['Nombre']}'): ", vacio=True
+            f"Nuevo Nombre (ENTER para dejar '{obras[indice]['Nombre']}'): ", vacio=True
         )
         if nuevo_nombre == "":
             print("Se mantiene el Nombre actual")
         else:
-            obra["Nombre"] = nuevo_nombre
+            obras[indice]["Nombre"] = nuevo_nombre
 
         nuevo_precio = ingreso_entero(  # Precio
-            f"Desea modificar el Precio? (ENTER para dejar ${obra['Precio']}): ",
+            f"Desea modificar el Precio? (ENTER para dejar ${obras[indice]['Precio']}): ",
             vacio=True,
         )
         if nuevo_precio == "":
             print("Se mantiene el Precio actual.")
         else:
-            obra["Precio"] == nuevo_precio
+            obras[indice]["Precio"] = nuevo_precio
 
         nueva_categoria = ingreso_texto(  # Categoria
-            f"Nueva Categoría (ENTER para dejar '{obra['Categoria']}'): ", vacio=True
+            f"Nueva Categoría (ENTER para dejar '{obras[indice]['Categoria']}'): ",
+            vacio=True,
         )
         if nueva_categoria == "":
             print("Se mantiene la Categoria actual")
         else:
-            obra["Categoria"] = nueva_categoria
+            obras[indice]["Categoria"] = nueva_categoria
 
         nueva_duracion = ingreso_entero(  # Duracion
-            f"Desea modificar la Duracion? (ENTER para dejar ${obra['Duracion']}): ",
+            f"Desea modificar la Duracion? (ENTER para dejar ${obras[indice]['Duracion']}): ",
             vacio=True,
         )
         if nueva_duracion == "":
             print("Se mantiene la Duracion actual.")
         else:
-            obra["Precio"] == nueva_duracion
+            obras[indice]["Duracion"] = nuevo_duracion
 
         with open(archivo, "w", encoding="UTF-8") as datos:
             json.dump(obras, datos, ensure_ascii=False, indent=4)
-        print(f"Obra modificada: {obra}")
+
+        print(f"Obra: '{obras[indice]["Nombre"]}'")
+        print(f"Precio: ${obras[indice]["Precio"]}")
+        print(f"Categoría: {obras[indice]["Categoria"]}")
+        print(f"Duración: {obras[indice]["Duracion"]} min")
         input("Presione ENTER para continuar.")
         limpiar_terminal()
 
@@ -171,9 +186,7 @@ def borrar_obra(archivo):
         id_borrar = mostrar_obras(  # Ingreso y busqueda del ID
             "archivos/obras.json", "Ingrese el ID de la obra a borrar: ", int
         )
-        IDs = []
-        for obra in obras:
-            IDs.append(obra["ID"])
+        IDs = lista_IDs(obras)
         if id_borrar not in IDs:
             input(
                 "No se encontró ninguna obra con el ID ingresado.\n\nPresione ENTER para continuar."
