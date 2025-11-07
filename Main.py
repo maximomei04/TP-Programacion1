@@ -26,7 +26,7 @@ def limpiar_terminal(segundos=0):
         os.system("clear")
 
 
-def ingreso_entero(mensaje="Ingrese un número entero: ", vacio=False):
+def ingreso_entero(mensaje="Ingrese un número entero: ", vacio=True):
     """Solamente permite ingresar enteros positivos. Devuelve un int."""
     while True:
         try:

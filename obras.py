@@ -112,9 +112,12 @@ def modificar_obra(archivo):
             input("Presione ENTER para continuar.")
             return
 
-        id_mod = mostrar_obras(  # Ingreso y busqueda del ID
-            "archivos/obras.json", "Ingrese el ID de la obra a modificar: ", int
-        )
+        while True:
+            id_mod = mostrar_obras(  # Ingreso y busqueda del ID
+                "archivos/obras.json", "Ingrese el ID de la obra a modificar: ", int
+            )
+            if id_mod != "":
+                break
         IDs = lista_IDs(obras)
         if id_mod not in IDs:
             input(
@@ -132,8 +135,7 @@ def modificar_obra(archivo):
             obras[indice]["Nombre"] = nuevo_nombre
 
         nuevo_precio = ingreso_entero(  # Precio
-            f"Desea modificar el Precio? (ENTER para dejar ${obras[indice]['Precio']}): ",
-            vacio=True,
+            f"Desea modificar el Precio? (ENTER para dejar ${obras[indice]['Precio']}): "
         )
         if nuevo_precio == "":
             print("Se mantiene el Precio actual.")
@@ -150,8 +152,7 @@ def modificar_obra(archivo):
             obras[indice]["Categoria"] = nueva_categoria
 
         nueva_duracion = ingreso_entero(  # Duracion
-            f"Desea modificar la Duracion? (ENTER para dejar ${obras[indice]['Duracion']}): ",
-            vacio=True,
+            f"Desea modificar la Duracion? (ENTER para dejar ${obras[indice]['Duracion']}): "
         )
         if nueva_duracion == "":
             print("Se mantiene la Duracion actual.")
