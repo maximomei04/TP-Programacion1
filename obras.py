@@ -2,7 +2,9 @@ import json
 from Main import *
 
 
-def mostrar_obras(archivo, continuar="Presione ENTER para continuar"):
+def mostrar_obras(archivo, mensaje="Presione ENTER para continuar", tipo=None):
+    """Muestra las obras y opcionalmente devuelve un dato"""
+    limpiar_terminal()
     try:
         with open(archivo, encoding="UTF-8") as datos:
             lista = json.load(datos)
@@ -18,25 +20,36 @@ def mostrar_obras(archivo, continuar="Presione ENTER para continuar"):
             for diccionario in lista:
                 for dato in diccionario:
                     if dato == "Precio":
-                        print(f"${diccionario[dato]:<30}", end=" | ")
+                        print(f"${diccionario[dato]:<29}", end=" | ")
                     elif dato == "Duracion":
                         print(f"{diccionario[dato]} min", end="")
                     else:
                         print(f"{diccionario[dato]:<30}", end=" | ")
                 print()
             print()
-            texto = input(continuar).strip()
+
+            texto = None
+            if tipo == str:
+                texto = ingreso_texto(mensaje)
+            elif tipo == int:
+                texto = ingreso_entero(mensaje)
+            elif tipo == None:
+                input(mensaje)
+
+            limpiar_terminal()
             return texto
+
     except (FileNotFoundError, OSError) as error:
         print(f"Error! {error}")
 
 
 def agregar_obras(archivo):
+    limpiar_terminal()
     try:
         with open(archivo, "r", encoding="UTF-8") as datos:
             obras = json.load(datos)
 
-            if len(obras) == 0:
+            if len(obras) == 0:  # Si no hay obras crea una obra con el ID 1
                 nuevo_id = 1
             else:
                 nuevo_id = max(obra["ID"] for obra in obras) + 1
@@ -62,7 +75,7 @@ def agregar_obras(archivo):
                 "Nombre": nombre,
                 "Precio": precio,
                 "Categoría": categoria,
-                "Duración": duracion,
+                "Duracion": duracion,
             }
             obras.append(nueva_obra)
 
@@ -72,6 +85,7 @@ def agregar_obras(archivo):
                 f"Obra agregada: | ID: {nuevo_id} | Nombre: {nombre} | Precio: ${precio} | Categoría: {categoria} | Duración: {duracion} min |"
             )
             input("Presione ENTER para continuar.")
+            limpiar_terminal()
 
     except (FileNotFoundError, OSError) as error:
         print(f"Error! {error}")
@@ -82,96 +96,113 @@ def modificar_obra(archivo):
         with open(archivo, "r", encoding="UTF-8") as datos:
             obras = json.load(datos)
 
-        if len(obras) == 0:
+        if len(obras) == 0:  # Chequear si hay alguna obra
             print("No hay obras para modificar.")
             input("Presione ENTER para continuar.")
             return
 
-        id_mod = mostrar_obras(
-            "archivos/obras.json", "Ingrese el ID de la obra a modificar: "
+        id_mod = mostrar_obras(  # Ingreso y busqueda del ID
+            "archivos/obras.json", "Ingrese el ID de la obra a modificar: ", int
         )
-        while not id_mod.isnumeric():
-            id_mod = input("ID inválido. Ingrese un número: ").strip()
-        id_mod = int(id_mod)
-        obra = None
-        for o in obras:
-            if o["ID"] == id_mod:
-                obra = o
-                break
-        if obra is None:
-            print("No se encontró una obra con ese ID.")
-            input("Presione ENTER para continuar.")
+        IDs = []
+        for obra in obras:
+            IDs.append(obra["ID"])
+        if id_mod not in IDs:
+            input(
+                "No se encontró ninguna obra con el ID ingresado.\n\nPresione ENTER para continuar."
+            )
             return
-        nuevo_nombre = input(
-            f"Nuevo nombre (ENTER para dejar '{obra['Nombre']}'): "
-        ).strip()
-        if nuevo_nombre != "":
+
+        nuevo_nombre = ingreso_texto(  # Nombre
+            f"Nuevo Nombre (ENTER para dejar '{obra['Nombre']}'): ", vacio=True
+        )
+        if nuevo_nombre == "":
+            print("Se mantiene el Nombre actual")
+        else:
             obra["Nombre"] = nuevo_nombre
-        while True:
-            entrada = input(
-                f"Desea modificar el precio? (ENTER para dejar ${obra['Precio']}): "
-            ).strip()
-            if entrada == "":
-                print("Se mantiene el precio actual.")
-                break
-            try:
-                nuevo_precio = int(entrada)
-                if nuevo_precio > 0:
-                    obra["Precio"] = nuevo_precio
-                    break
-                else:
-                    print("El precio debe ser mayor a 0.")
-            except ValueError:
-                print("Precio inválido. Ingrese un número entero mayor a 0.")
+
+        nuevo_precio = ingreso_entero(  # Precio
+            f"Desea modificar el Precio? (ENTER para dejar ${obra['Precio']}): ",
+            vacio=True,
+        )
+        if nuevo_precio == "":
+            print("Se mantiene el Precio actual.")
+        else:
+            obra["Precio"] == nuevo_precio
+
+        nueva_categoria = ingreso_texto(  # Categoria
+            f"Nueva Categoría (ENTER para dejar '{obra['Categoria']}'): ", vacio=True
+        )
+        if nueva_categoria == "":
+            print("Se mantiene la Categoria actual")
+        else:
+            obra["Categoria"] = nueva_categoria
+
+        nueva_duracion = ingreso_entero(  # Duracion
+            f"Desea modificar la Duracion? (ENTER para dejar ${obra['Duracion']}): ",
+            vacio=True,
+        )
+        if nueva_duracion == "":
+            print("Se mantiene la Duracion actual.")
+        else:
+            obra["Precio"] == nueva_duracion
 
         with open(archivo, "w", encoding="UTF-8") as datos:
             json.dump(obras, datos, ensure_ascii=False, indent=4)
         print(f"Obra modificada: {obra}")
         input("Presione ENTER para continuar.")
+        limpiar_terminal()
 
     except (FileNotFoundError, OSError) as error:
         print(f"Error! {error}")
 
 
 def borrar_obra(archivo):
+    limpiar_terminal()
     try:
         with open(archivo, "r", encoding="UTF-8") as datos:
             obras = json.load(datos)
 
-        if len(obras) == 0:
+        if len(obras) == 0:  # Chequear si hay alguna obra
             print("No hay obras para borrar.")
             input("Presione ENTER para continuar.")
             return
 
-        id_borrar = mostrar_obras(
-            "archivos/obras.json", "Ingrese el ID de la obra a borrar: "
+        id_borrar = mostrar_obras(  # Ingreso y busqueda del ID
+            "archivos/obras.json", "Ingrese el ID de la obra a borrar: ", int
         )
-        id_borrar = int(id_borrar)
+        IDs = []
+        for obra in obras:
+            IDs.append(obra["ID"])
+        if id_borrar not in IDs:
+            input(
+                "No se encontró ninguna obra con el ID ingresado.\n\nPresione ENTER para continuar."
+            )
+            return
 
-        for i, o in enumerate(obras):
-            if o["ID"] == id_borrar:
-                confirmacion = (
-                    input(f'¿Seguro que quiere borrar "{o["Nombre"]}"? (s/n): ')
-                    .strip()
-                    .lower()
-                )
-                if confirmacion == "s":
-                    obras.pop(i)
-                    print("Obra eliminada.")
-                else:
-                    print("No se eliminó ninguna obra.")
-                input("Presione ENTER para continuar.")
-                with open(archivo, "w", encoding="UTF-8") as datos:
-                    json.dump(obras, datos, ensure_ascii=False, indent=4)
-                return
+        indice = IDs.index(id_borrar)
+        confirmacion = (
+            input(f'¿Seguro que quiere borrar "{obras[indice]["Nombre"]}"? (s/n): ')
+            .strip()
+            .lower()
+        )
+        if confirmacion == "s":
+            obras.pop(indice)
+            print("Obra eliminada.")
+        else:
+            print("No se eliminó ninguna obra.")
 
-        input("No se encontró una obra con ese ID.\nPresione ENTER para continuar.")
+        with open(archivo, "w", encoding="UTF-8") as datos:
+            json.dump(obras, datos, ensure_ascii=False, indent=4)
+        input("Presione ENTER para continuar.")
+        limpiar_terminal()
 
     except (FileNotFoundError, OSError) as error:
         print(f"Error! {error}")
 
 
 def estadisticas_precios_obras(archivo):
+    limpiar_terminal()
     try:
         with open(archivo, "r", encoding="UTF-8") as datos:
             obras = json.load(datos)
@@ -180,12 +211,30 @@ def estadisticas_precios_obras(archivo):
         for obra in obras:
             precios.append(obra["Precio"])
 
-        minimo = min(precios)
-        promedio = sum(precios) // len(precios)
+        minimo = minimo_lista(precios)
+        promedio = suma_lista(precios) // len(precios)
         maximo = max(precios)
         input(
-            f"El precio mínimo es: {minimo}\nEl precio promedio es: {promedio}\nEl precio maximo es: {maximo}\n\nPresione ENTER para continuar"
+            f"El precio mínimo es: ${minimo}\nEl precio promedio es: ${promedio}\nEl precio maximo es: ${maximo}\n\nPresione ENTER para continuar"
         )
+        limpiar_terminal()
 
     except (FileNotFoundError, OSError) as error:
         print(f"Error! {error}")
+
+
+def minimo_lista(lista):
+    if len(lista) > 0:
+        if len(lista) == 1:
+            return lista[0]
+        elif lista[0] <= minimo_lista(lista[1:]):
+            return lista[0]
+        else:
+            return minimo_lista(lista[1:])
+
+
+def suma_lista(lista):
+    if len(lista) == 0:
+        return 0
+    else:
+        return lista[0] + suma_lista(lista[1:])

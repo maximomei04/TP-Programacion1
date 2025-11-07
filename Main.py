@@ -18,21 +18,24 @@ def mostrar_matriz(matriz, encabezados="-" * 20):
     input("Presione ENTER para continuar")
 
 
-def limpiar_terminal():
+def limpiar_terminal(segundos=0):
+    time.sleep(segundos)
     if os.name == "nt":
         os.system("cls")
     else:
         os.system("clear")
 
 
-def ingreso_entero(mensaje="Ingrese un número entero: "):
-    """Solamente permite ingresar enteros positivos o 0. Devuelve un int."""
+def ingreso_entero(mensaje="Ingrese un número entero: ", vacio=False):
+    """Solamente permite ingresar enteros positivos. Devuelve un int."""
     while True:
         try:
-            valor_ingresado = float(input(mensaje).strip())
-            valor_entero = int(valor_ingresado)
-            if valor_entero != valor_ingresado or valor_entero < 0:
+            valor_ingresado = input(mensaje).strip()
+            if valor_ingresado == float or int(valor_ingresado) <= 0:
                 raise ValueError
+            elif valor_ingresado == "" and vacio == True:
+                return valor_ingresado
+            valor_entero = int(valor_ingresado)
             break
         except ValueError:
             print(
@@ -48,10 +51,13 @@ def ingreso_entero(mensaje="Ingrese un número entero: "):
 def ingreso_texto(
     mensaje="Ingrese un texto: ",
     error="Ingreso inválido: No puede quedar vacío. Presione ENTER para reintentar",
+    vacio=False,
 ):
+    """Opcionalmente permite ingresar strings vacíos"""
+    texto = ""
     while True:
         texto = input(mensaje).strip()
-        if texto == "":
+        if texto == "" and vacio == False:
             input(error)
         else:
             break
@@ -65,6 +71,7 @@ def main():
     # -------------------------------------------------
     # Inicialización de variables
     # ----------------------------------------------------------------------------------------------
+    limpiar_terminal()
     init_estado_desde_reservas()
     # -------------------------------------------------
     # Bloque de menú
@@ -94,11 +101,11 @@ def main():
 
         if opcion == "0":
             print("Gracias por usar el sistema")
-            time.sleep(2)
-            limpiar_terminal()
+            limpiar_terminal(2)
             exit()
 
         elif opcion == "1":  # MENÚ OBRAS
+            limpiar_terminal()
             while True:
                 while True:
                     opciones = 5
@@ -128,6 +135,7 @@ def main():
                 print()
 
                 if opcion == "0":  # Opción salir del submenú
+                    limpiar_terminal()
                     break  # Volver al menú anterior
 
                 elif opcion == "1":  # Opción 1
@@ -139,7 +147,6 @@ def main():
 
                 elif opcion == "3":  # Opción 3
                     modificar_obra("archivos/obras.json")
-                    mostrar_obras("archivos/obras.json")
 
                 elif opcion == "4":  # Opción 4
                     borrar_obra("archivos/obras.json")
@@ -148,6 +155,7 @@ def main():
                     estadisticas_precios_obras("archivos/obras.json")
 
         elif opcion == "2":  # MENÚ FUNCIONES
+            limpiar_terminal()
             while True:
                 while True:
                     # 1. Cambiamos de 4 a 5 opciones
@@ -201,6 +209,7 @@ def main():
                     reportes_con_lambdas()
 
         elif opcion == "3":  # MENÚ RESERVAS
+            limpiar_terminal()
             while True:
                 while True:
                     opciones = 4
@@ -242,6 +251,7 @@ def main():
                     borrar_reserva()
 
         elif opcion == "4":  # MENÚ USUARIOS
+            limpiar_terminal()
             while True:
                 while True:
                     opciones = 7
@@ -296,13 +306,11 @@ def main():
 
                 elif opcion == "6":  # Opción 6
                     usuarios_con_mas_reservas()
-                elif opcion == "7": # Opción 7
+                elif opcion == "7":  # Opción 7
                     topTresUsuariosMasJovenes()
 
-        input("\nPresione ENTER para volver al menú.")
         print("\n\n")
 
 
 if __name__ == "__main__":
     main()
-
