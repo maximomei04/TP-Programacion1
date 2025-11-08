@@ -1,5 +1,5 @@
 import json
-from Main import *
+from Main import limpiar_terminal, ingreso_texto,ingreso_entero
 
 
 def mostrar_obras(archivo, mensaje="Presione ENTER para continuar", tipo=None):
@@ -98,9 +98,6 @@ def lista_IDs(lista_dict):
     return IDs
 
 
-def confirmacion():
-    return
-
 
 def modificar_obra(archivo):
     try:
@@ -157,15 +154,15 @@ def modificar_obra(archivo):
         if nueva_duracion == "":
             print("Se mantiene la Duracion actual.")
         else:
-            obras[indice]["Duracion"] = nuevo_duracion
+            obras[indice]["Duracion"] = nueva_duracion
 
         with open(archivo, "w", encoding="UTF-8") as datos:
             json.dump(obras, datos, ensure_ascii=False, indent=4)
 
-        print(f"Obra: '{obras[indice]["Nombre"]}'")
-        print(f"Precio: ${obras[indice]["Precio"]}")
-        print(f"Categoría: {obras[indice]["Categoria"]}")
-        print(f"Duración: {obras[indice]["Duracion"]} min")
+        print(f"Obra: '{obras[indice]['Nombre']}'")
+        print(f"Precio: ${obras[indice]['Precio']}")
+        print(f"Categoría: {obras[indice]['Categoria']}")
+        print(f"Duración: {obras[indice]['Duracion']} min")
         input("Presione ENTER para continuar.")
         limpiar_terminal()
 
@@ -252,3 +249,4 @@ def suma_lista(lista):
         return 0
     else:
         return lista[0] + suma_lista(lista[1:])
+
