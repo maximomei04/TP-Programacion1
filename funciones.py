@@ -27,7 +27,6 @@ def _obtener_ultimo_id(archivo, id_columna=0):
     return ultimo_id
 
 
-
 def _procesar_linea_recursiva(archivo, lista_funciones):
 
     linea = archivo.readline()  # Lee una línea
@@ -63,8 +62,7 @@ def leer_funciones():
             f"Nota: No se encontró {ARCHIVO_FUNCIONES}, se creará uno nuevo al guardar."
         )
 
-    return funciones  
-
+    return funciones
 
 
 def guardar_funciones(funciones):
@@ -224,12 +222,11 @@ def borrar_funcion():
         except OSError as e:
             print(f"Error al reemplazar el archivo: {e}")
     else:
-        if 'id_actual' in locals() and id_actual != id_borrar:
+        if "id_actual" in locals() and id_actual != id_borrar:
             print("Función no encontrada.")
         os.remove(ARCHIVO_TEMP)
 
     input("Presione ENTER para continuar.")
-
 
 
 def encontrar_funciones_por_obra(id_obra_buscada, funciones):
