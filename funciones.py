@@ -2,17 +2,13 @@ import Main
 import re
 from functools import reduce
 from datetime import datetime
-import os  # <--- IMPORTANTE
+import os
 
 ARCHIVO_FUNCIONES = "archivos/funciones.txt"
 ARCHIVO_TEMP = "archivos/funciones_temp.txt"
 
 
 def _obtener_ultimo_id(archivo, id_columna=0):
-    """
-    Lee el archivo linea por linea para encontrar el ID más alto
-    en la columna especificada, sin cargar todo a memoria.
-    """
     ultimo_id = 0
     try:
         with open(archivo, "r", encoding="utf-8") as f:
@@ -32,9 +28,6 @@ def _obtener_ultimo_id(archivo, id_columna=0):
 
 
 def leer_funciones():
-    """
-    Esta función se mantiene igual, se usa para 'Mostrar Funciones'.
-    """
     funciones = []
     try:
         with open(ARCHIVO_FUNCIONES, "r", encoding="utf-8") as f:
@@ -59,10 +52,6 @@ def leer_funciones():
 
 
 def guardar_funciones(funciones):
-    """
-    Esta función se mantiene por si alguna otra parte del código
-    la necesita, pero ya no es usada por crear/modificar/borrar.
-    """
     try:
         with open(ARCHIVO_FUNCIONES, "w", encoding="utf-8") as f:
             for funcion in funciones:
@@ -74,10 +63,6 @@ def guardar_funciones(funciones):
 
 
 def crear_funcion():
-    """
-    (Refactorizado) Usa 'append' para agregar una nueva función
-    sin cargar todo el archivo.
-    """
     # 1. Obtener el último ID leyendo el archivo eficientemente
     ultimo_id = _obtener_ultimo_id(ARCHIVO_FUNCIONES, id_columna=0)
     id_funcion = ultimo_id + 1
@@ -107,10 +92,6 @@ def crear_funcion():
 
 
 def modificar_funcion():
-    """
-    (Refactorizado) Usa un archivo temporal para modificar una función
-    sin cargar todo el archivo.
-    """
     id_modificar = Main.ingreso_entero("Ingrese el ID de la funcion a modificar: ")
     encontrada = False
 
@@ -182,10 +163,6 @@ def modificar_funcion():
 
 
 def borrar_funcion():
-    """
-    (Refactorizado) Usa un archivo temporal para borrar una función
-    sin cargar todo el archivo.
-    """
     id_borrar = Main.ingreso_entero("Ingrese el ID de la funcion a borrar: ")
     encontrado = False
 
@@ -244,10 +221,6 @@ def borrar_funcion():
 
     input("Presione ENTER para continuar.")
 
-
-# --- Funciones de Reportes (MAP, FILTER, REDUCE) ---
-# Estas funciones SÍ necesitan cargar los datos en memoria para procesarlos.
-# Se llaman desde 'reportes_con_lambdas', que lee los datos 1 sola vez.
 
 def encontrar_funciones_por_obra(id_obra_buscada, funciones):
     funciones_filtradas = list(filter(lambda f: f[1] == id_obra_buscada, funciones))
