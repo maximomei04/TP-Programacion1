@@ -2,12 +2,42 @@ import re
 from funciones import leer_funciones
 from reservas import leer_reservas
 import Main
+import os  # <--- IMPORTANTE
 
 ARCHIVO_USUARIOS = "archivos/usuarios.txt"
+ARCHIVO_TEMP = "archivos/usuarios_temp.txt"
+
 patron_email = re.compile(r'^[\w\.-]+@[\w\.-]+\.\w+$')
-patron_telefono = re.compile(r'^\d{8,12}$')  
+patron_telefono = re.compile(r'^\d{8,12}$')
+
+
+def _obtener_ultimo_id(archivo, id_columna=0):
+    """
+    Lee el archivo linea por linea para encontrar el ID más alto
+    en la columna especificada, sin cargar todo a memoria.
+    """
+    ultimo_id = 0
+    try:
+        with open(archivo, "r", encoding="utf-8") as f:
+            for linea in f:
+                linea = linea.strip()
+                if linea:
+                    try:
+                        partes = linea.split(";")
+                        id_actual = int(partes[id_columna])
+                        if id_actual > ultimo_id:
+                            ultimo_id = id_actual
+                    except (ValueError, IndexError):
+                        continue  # Ignorar lineas mal formadas
+    except FileNotFoundError:
+        pass  # Si no hay archivo, el ultimo ID es 0
+    return ultimo_id
+
 
 def leer_usuarios():
+    """
+    Se mantiene igual, se usa para 'Mostrar Usuarios' y reportes.
+    """
     usuarios = []
     try:
         with open(ARCHIVO_USUARIOS, 'r', encoding='utf-8') as f:
@@ -32,10 +62,11 @@ def leer_usuarios():
 
     return usuarios
 
-def guardar_usuarios(usuarios):
-    
-    # Recibe la lista de listas y la guarda en usuarios.txt
 
+def guardar_usuarios(usuarios):
+    """
+    Se mantiene, pero ya no es usada por crear/modificar/borrar.
+    """
     try:
         with open(ARCHIVO_USUARIOS, 'w', encoding='utf-8') as f:
             for usuario in usuarios:
@@ -47,13 +78,13 @@ def guardar_usuarios(usuarios):
 
 
 def crear_usuario():
-    usuarios = leer_usuarios() 
+    """
+    (Refactorizado) Usa 'append' para agregar un nuevo usuario.
+    """
+    # 1. Obtener último ID eficientemente
+    id_usuario = _obtener_ultimo_id(ARCHIVO_USUARIOS, id_columna=0) + 1
     
-    if usuarios:
-        id_usuario = usuarios[-1][0] + 1 
-    else:
-        id_usuario = 1 
-        
+    # 2. Pedir datos
     nombre = input("Nombre del usuario: ")
 
     email = input("Email del usuario: ")
@@ -68,73 +99,145 @@ def crear_usuario():
 
     edad = Main.ingreso_entero("Edad del usuario: ")
 
-    usuario = [id_usuario, nombre, email, telefono, edad]
-    usuarios.append(usuario)
-    
-    guardar_usuarios(usuarios) 
-    
-    print(f"Usuario {nombre} creado con éxito (ID: {id_usuario})")
+    # 3. Guardar en modo 'append'
+    try:
+        with open(ARCHIVO_USUARIOS, "a", encoding="utf-8") as f:
+            nueva_linea = f"{id_usuario};{nombre};{email};{telefono};{edad}\n"
+            f.write(nueva_linea)
+        print(f"Usuario {nombre} creado con éxito (ID: {id_usuario})")
+    except OSError as e:
+        print(f"Error al guardar el nuevo usuario: {e}")
+
     input("Presione ENTER para continuar.")
 
+
 def modificar_usuario():
-    usuarios = leer_usuarios()
-    
+    """
+    (Refactorizado) Usa archivo temporal para modificar.
+    """
     id_modificar = Main.ingreso_entero("Ingrese el ID del usuario a modificar: ")
     encontrado = False
     
-    for usuario in usuarios:
-        if usuario[0] == id_modificar:
-            print(f"Usuario encontrado: {usuario[1]}")
-            nuevo_nombre = input("Nuevo nombre (enter para dejar igual): ")
-            nuevo_email = input("Nuevo email (enter para dejar igual): ")
-            nuevo_telefono = input("Nuevo teléfono (enter para dejar igual): ")
+    try:
+        with open(ARCHIVO_USUARIOS, "r", encoding="utf-8") as arch_orig, open(
+            ARCHIVO_TEMP, "w", encoding="utf-8"
+        ) as arch_temp:
+            
+            for linea in arch_orig:
+                linea = linea.strip()
+                if not linea:
+                    continue
+                
+                try:
+                    partes = linea.split(";")
+                    id_actual = int(partes[0])
 
-            if nuevo_nombre != "":
-                usuario[1] = nuevo_nombre
-            if nuevo_email != "":
-                usuario[2] = nuevo_email
-            if nuevo_telefono != "":
-                usuario[3] = nuevo_telefono
-            
-            guardar_usuarios(usuarios)
-            print("Usuario modificado con éxito.")
-            encontrado = True
-            break 
-            
-    if not encontrado:
+                    if id_actual == id_modificar:
+                        encontrado = True
+                        print(f"Usuario encontrado: {partes[1]}")
+                        
+                        nuevo_nombre = input("Nuevo nombre (enter para dejar igual): ")
+                        nuevo_email = input("Nuevo email (enter para dejar igual): ")
+                        nuevo_telefono = input("Nuevo teléfono (enter para dejar igual): ")
+                        # Asumimos que la edad no se modifica
+                        
+                        nombre_final = nuevo_nombre if nuevo_nombre != "" else partes[1]
+                        email_final = nuevo_email if nuevo_email != "" else partes[2]
+                        telefono_final = nuevo_telefono if nuevo_telefono != "" else partes[3]
+                        
+                        nueva_linea = f"{id_actual};{nombre_final};{email_final};{telefono_final};{partes[4]}\n"
+                        arch_temp.write(nueva_linea)
+                        print("Usuario modificado con éxito.")
+                    else:
+                        arch_temp.write(linea + "\n")
+                
+                except (ValueError, IndexError):
+                    arch_temp.write(linea + "\n")
+
+    except FileNotFoundError:
+        print(f"No se encontró el archivo {ARCHIVO_USUARIOS}.")
+    except OSError as e:
+        print(f"Error de E/S: {e}")
+
+    # Reemplazar archivo
+    if encontrado:
+        try:
+            os.remove(ARCHIVO_USUARIOS)
+            os.rename(ARCHIVO_TEMP, ARCHIVO_USUARIOS)
+        except OSError as e:
+            print(f"Error al reemplazar el archivo: {e}")
+    else:
         print("Usuario no encontrado.")
+        os.remove(ARCHIVO_TEMP)
         
     input("Presione ENTER para continuar.")
 
+
 def borrar_usuario():
-    usuarios = leer_usuarios()
-    
+    """
+    (Refactorizado) Usa archivo temporal para borrar.
+    """
     id_borrar = Main.ingreso_entero("Ingrese el ID del usuario a borrar: ")
     encontrado = False
     
-    for i, usuario in enumerate(usuarios):
-        if usuario[0] == id_borrar:
-            confirmacion = input(f"¿Seguro que quiere borrar a '{usuario[1]}'? (s/n): ").strip().lower()
-            if confirmacion == 's':
-                usuarios.pop(i) 
-                guardar_usuarios(usuarios)
-                print(f"Usuario {usuario[1]} fue eliminado.")
-            else:
-                print("Operación cancelada.")
-            encontrado = True
-            break
+    try:
+        with open(ARCHIVO_USUARIOS, "r", encoding="utf-8") as arch_orig, open(
+            ARCHIVO_TEMP, "w", encoding="utf-8"
+        ) as arch_temp:
             
-    if not encontrado:
-        print("Usuario no encontrado.")
+            for linea in arch_orig:
+                linea = linea.strip()
+                if not linea:
+                    continue
+                
+                try:
+                    partes = linea.split(";")
+                    id_actual = int(partes[0])
+
+                    if id_actual == id_borrar:
+                        confirmacion = input(f"¿Seguro que quiere borrar a '{partes[1]}'? (s/n): ").strip().lower()
+                        if confirmacion == 's':
+                            encontrado = True
+                            print(f"Usuario {partes[1]} fue eliminado.")
+                            # No escribir la línea en el temporal
+                        else:
+                            print("Operación cancelada.")
+                            arch_temp.write(linea + "\n")
+                    else:
+                        arch_temp.write(linea + "\n")
+                
+                except (ValueError, IndexError):
+                    arch_temp.write(linea + "\n")
+
+    except FileNotFoundError:
+        print(f"No se encontró el archivo {ARCHIVO_USUARIOS}.")
+    except OSError as e:
+        print(f"Error de E/S: {e}")
+
+    # Reemplazar archivo
+    if encontrado:
+        try:
+            os.remove(ARCHIVO_USUARIOS)
+            os.rename(ARCHIVO_TEMP, ARCHIVO_USUARIOS)
+        except OSError as e:
+            print(f"Error al reemplazar el archivo: {e}")
+    else:
+        if 'id_actual' in locals() and id_actual != id_borrar:
+             print("Usuario no encontrado.")
+        os.remove(ARCHIVO_TEMP)
         
     input("Presione ENTER para continuar.")
 
+
+# --- Funciones de Reportes ---
+# Estas funciones SÍ necesitan cargar los datos en memoria para procesarlos.
+
 def usuarios_con_mas_reservas():
+    # Esta función necesita leer ambos archivos
     usuarios = leer_usuarios()
-    conteo_reservas = {}
-
     lista_de_reservas = leer_reservas() 
-
+    
+    conteo_reservas = {}
     for reserva in lista_de_reservas:
         id_usuario = reserva[0]
         conteo_reservas[id_usuario] = conteo_reservas.get(id_usuario, 0) + 1
@@ -160,12 +263,14 @@ def usuarios_con_mas_reservas():
             
     input("Presione ENTER para continuar.")
 
+
 promedio = lambda lista: sum(lista) / len(lista)
 
+
 def promedio_edad_por_funcion():
+    # Esta función necesita leer los 3 archivos
     usuarios = leer_usuarios()
     lista_de_funciones = leer_funciones()
-    
     lista_de_reservas = leer_reservas()
 
     if not usuarios:
@@ -205,6 +310,7 @@ def promedio_edad_por_funcion():
 
 
 def topTresUsuariosMasJovenes():
+    # Esta función SÍ carga todo en memoria a propósito
     usuarios = leer_usuarios()
     
     if not usuarios:

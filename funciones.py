@@ -2,12 +2,39 @@ import Main
 import re
 from functools import reduce
 from datetime import datetime
+import os  # <--- IMPORTANTE
 
 ARCHIVO_FUNCIONES = "archivos/funciones.txt"
+ARCHIVO_TEMP = "archivos/funciones_temp.txt"
+
+
+def _obtener_ultimo_id(archivo, id_columna=0):
+    """
+    Lee el archivo linea por linea para encontrar el ID más alto
+    en la columna especificada, sin cargar todo a memoria.
+    """
+    ultimo_id = 0
+    try:
+        with open(archivo, "r", encoding="utf-8") as f:
+            for linea in f:
+                linea = linea.strip()
+                if linea:
+                    try:
+                        partes = linea.split(";")
+                        id_actual = int(partes[id_columna])
+                        if id_actual > ultimo_id:
+                            ultimo_id = id_actual
+                    except (ValueError, IndexError):
+                        continue  # Ignorar lineas mal formadas
+    except FileNotFoundError:
+        pass  # Si no hay archivo, el ultimo ID es 0
+    return ultimo_id
 
 
 def leer_funciones():
-
+    """
+    Esta función se mantiene igual, se usa para 'Mostrar Funciones'.
+    """
     funciones = []
     try:
         with open(ARCHIVO_FUNCIONES, "r", encoding="utf-8") as f:
@@ -33,7 +60,8 @@ def leer_funciones():
 
 def guardar_funciones(funciones):
     """
-    Recibe la lista de listas y la guarda en funciones.txt.
+    Esta función se mantiene por si alguna otra parte del código
+    la necesita, pero ya no es usada por crear/modificar/borrar.
     """
     try:
         with open(ARCHIVO_FUNCIONES, "w", encoding="utf-8") as f:
@@ -46,16 +74,16 @@ def guardar_funciones(funciones):
 
 
 def crear_funcion():
-    funciones = leer_funciones()
+    """
+    (Refactorizado) Usa 'append' para agregar una nueva función
+    sin cargar todo el archivo.
+    """
+    # 1. Obtener el último ID leyendo el archivo eficientemente
+    ultimo_id = _obtener_ultimo_id(ARCHIVO_FUNCIONES, id_columna=0)
+    id_funcion = ultimo_id + 1
 
-    Main.mostrar_matriz(funciones, ("ID Función", "ID Obra", "Fecha"))
-
+    # 2. Pedir datos al usuario
     id_obra = Main.ingreso_entero("Ingrese el ID de la obra: ")
-
-    if funciones:
-        id_funcion = funciones[-1][0] + 1 if len(funciones) > 0 else 1
-    else:
-        id_funcion = 1
 
     fecha_valida = False
     fecha = ""
@@ -66,74 +94,163 @@ def crear_funcion():
         else:
             print("Formato inválido. Use YYYY-MM-DD (ejemplo: 2025-09-18).")
 
-    funciones.append([id_funcion, id_obra, fecha])
+    # 3. Abrir en modo 'append' (agregar) y escribir la nueva línea
+    try:
+        with open(ARCHIVO_FUNCIONES, "a", encoding="utf-8") as f:
+            nueva_linea = f"{id_funcion};{id_obra};{fecha}\n"
+            f.write(nueva_linea)
+        print(f"Función creada con éxito (ID: {id_funcion}).")
+    except OSError as e:
+        print(f"Error al guardar la nueva función: {e}")
 
-    guardar_funciones(funciones)
-    print("Función creada con éxito.")
-
-    Main.mostrar_matriz(funciones, ("ID Función", "ID Obra", "Fecha"))
+    input("Presione ENTER para continuar.")
 
 
 def modificar_funcion():
-    funciones = leer_funciones()
-
+    """
+    (Refactorizado) Usa un archivo temporal para modificar una función
+    sin cargar todo el archivo.
+    """
     id_modificar = Main.ingreso_entero("Ingrese el ID de la funcion a modificar: ")
-    encontrada = 0
-    for id_funcion in funciones:
-        if id_funcion[0] == id_modificar:
-            print(f"Función encontrada: Obra {id_funcion[1]}, Fecha {id_funcion[2]}")
-            nuevaFecha = input("Ingrese la fecha nueva (enter para dejar igual): ")
-            nuevaObra = input("Ingrese nuevo ID de obra (enter para dejar igual): ")
+    encontrada = False
 
-            if nuevaFecha != "":
-                id_funcion[2] = nuevaFecha
-            if nuevaObra != "":
+    try:
+        with open(ARCHIVO_FUNCIONES, "r", encoding="utf-8") as arch_orig, open(
+            ARCHIVO_TEMP, "w", encoding="utf-8"
+        ) as arch_temp:
+            for linea in arch_orig:
+                linea = linea.strip()
+                if not linea:
+                    continue
+
                 try:
-                    id_funcion[1] = int(nuevaObra)
-                except ValueError:
-                    print("ID de obra inválido, no se modificó.")
+                    partes = linea.split(";")
+                    id_actual = int(partes[0])
 
-            guardar_funciones(funciones)
-            print("Función modificada con éxito.")
-            encontrada = 1
+                    if id_actual == id_modificar:
+                        encontrada = True
+                        print(
+                            f"Función encontrada: Obra {partes[1]}, Fecha {partes[2]}"
+                        )
+                        nuevaFecha = input(
+                            "Ingrese la fecha nueva (enter para dejar igual): "
+                        ).strip()
+                        nuevaObra = input(
+                            "Ingrese nuevo ID de obra (enter para dejar igual): "
+                        ).strip()
 
-    if encontrada == 0:
-        print("Función no encontrada")
+                        # Mantener datos antiguos si no se ingresan nuevos
+                        fecha_final = nuevaFecha if nuevaFecha != "" else partes[2]
+                        obra_final = partes[1]
 
-    Main.mostrar_matriz(funciones, ("ID Función", "ID Obra", "Fecha"))
+                        if nuevaObra != "":
+                            try:
+                                obra_final = int(nuevaObra)
+                            except ValueError:
+                                print(
+                                    "ID de obra inválido, se mantendrá el ID original."
+                                )
+                                obra_final = partes[1]
+                        
+                        arch_temp.write(f"{id_actual};{obra_final};{fecha_final}\n")
+                        print("Función modificada con éxito.")
+                    else:
+                        arch_temp.write(linea + "\n")
+
+                except (ValueError, IndexError):
+                    arch_temp.write(linea + "\n") # Preservar lineas mal formadas
+
+    except FileNotFoundError:
+        print(f"No se encontró el archivo {ARCHIVO_FUNCIONES}.")
+        return
+    except OSError as e:
+        print(f"Error de E/S: {e}")
+        return
+
+    # 4. Reemplazar el archivo original con el temporal
+    if encontrada:
+        try:
+            os.remove(ARCHIVO_FUNCIONES)
+            os.rename(ARCHIVO_TEMP, ARCHIVO_FUNCIONES)
+        except OSError as e:
+            print(f"Error al reemplazar el archivo: {e}")
+    else:
+        print("Función no encontrada.")
+        os.remove(ARCHIVO_TEMP)  # Borrar el temporal si no se usó
+
+    input("Presione ENTER para continuar.")
 
 
 def borrar_funcion():
-    funciones = leer_funciones()
-
+    """
+    (Refactorizado) Usa un archivo temporal para borrar una función
+    sin cargar todo el archivo.
+    """
     id_borrar = Main.ingreso_entero("Ingrese el ID de la funcion a borrar: ")
     encontrado = False
 
-    for i, id_funcion in enumerate(funciones):
-        if id_funcion[0] == id_borrar:
-            confirmacion = (
-                input(
-                    f"¿Seguro que quiere borrar la función {id_funcion[0]} (Obra: {id_funcion[1]})? (s/n): "
-                )
-                .strip()
-                .lower()
-            )
-            if confirmacion == "s":
-                funciones.pop(i)
-                guardar_funciones(funciones)
-                print(f"La funcion {id_funcion[0]} fue eliminada.")
-            else:
-                print("Operación cancelada.")
-            encontrado = True
+    try:
+        with open(ARCHIVO_FUNCIONES, "r", encoding="utf-8") as arch_orig, open(
+            ARCHIVO_TEMP, "w", encoding="utf-8"
+        ) as arch_temp:
+            for linea in arch_orig:
+                linea = linea.strip()
+                if not linea:
+                    continue
+                
+                try:
+                    partes = linea.split(";")
+                    id_actual = int(partes[0])
 
-    if not encontrado:
-        print("Función no encontrada.")
+                    if id_actual == id_borrar:
+                        confirmacion = (
+                            input(
+                                f"¿Seguro que quiere borrar la función {partes[0]} (Obra: {partes[1]})? (s/n): "
+                            )
+                            .strip()
+                            .lower()
+                        )
+                        if confirmacion == "s":
+                            encontrado = True
+                            print(f"La funcion {id_actual} fue eliminada.")
+                            # No escribimos la línea en arch_temp, omitiéndola
+                        else:
+                            print("Operación cancelada. La función no se borrará.")
+                            arch_temp.write(linea + "\n")
+                    else:
+                        arch_temp.write(linea + "\n")
+                
+                except (ValueError, IndexError):
+                    arch_temp.write(linea + "\n") # Preservar lineas mal formadas
 
+    except FileNotFoundError:
+        print(f"No se encontró el archivo {ARCHIVO_FUNCIONES}.")
+        return
+    except OSError as e:
+        print(f"Error de E/S: {e}")
+        return
+
+    # 4. Reemplazar el archivo original con el temporal
+    if encontrado:
+        try:
+            os.remove(ARCHIVO_FUNCIONES)
+            os.rename(ARCHIVO_TEMP, ARCHIVO_FUNCIONES)
+        except OSError as e:
+            print(f"Error al reemplazar el archivo: {e}")
+    else:
+        if 'id_actual' in locals() and id_actual != id_borrar:
+             print("Función no encontrada.")
+        os.remove(ARCHIVO_TEMP)
+
+    input("Presione ENTER para continuar.")
+
+
+# --- Funciones de Reportes (MAP, FILTER, REDUCE) ---
+# Estas funciones SÍ necesitan cargar los datos en memoria para procesarlos.
+# Se llaman desde 'reportes_con_lambdas', que lee los datos 1 sola vez.
 
 def encontrar_funciones_por_obra(id_obra_buscada, funciones):
-
     funciones_filtradas = list(filter(lambda f: f[1] == id_obra_buscada, funciones))
-
     print(
         f"\n--- Funciones encontradas para la Obra ID {id_obra_buscada} (usando FILTER) ---"
     )
@@ -141,20 +258,13 @@ def encontrar_funciones_por_obra(id_obra_buscada, funciones):
         print("No se encontraron funciones para esa obra.")
     else:
         Main.mostrar_matriz(funciones_filtradas, ("ID Función", "ID Obra", "Fecha"))
-
     return funciones_filtradas
 
-
 def obtener_fechas_como_objetos(lista_funciones):
-    """
-    Usa MAP para convertir todas las fechas (string) en objetos datetime.
-    (Sin cambios, ya que recibía la lista como parámetro)
-    """
     print(f"\n--- Fechas convertidas a objetos datetime (usando MAP) ---")
     if not lista_funciones:
         print("No hay fechas para convertir.")
         return
-
     try:
         fechas_objetos = list(
             map(lambda f: datetime.strptime(f[2], "%Y-%m-%d"), lista_funciones)
@@ -166,38 +276,22 @@ def obtener_fechas_como_objetos(lista_funciones):
             f"Error al convertir fechas: {e}. Asegúrese que el formato sea YYYY-MM-DD."
         )
 
-
 def encontrar_ultima_funcion(funciones):
-    """
-    Usa REDUCE para encontrar la función con la fecha más lejana.
-    (Ahora recibe 'funciones' como parámetro)
-    """
     if not funciones:
         print("\nNo hay funciones para comparar.")
         return
-
     ultima = reduce(lambda f1, f2: f1 if f1[2] > f2[2] else f2, funciones)
-
     print(f"\n--- Última función programada (usando REDUCE) ---")
     print(f"ID Función: {ultima[0]}, Obra: {ultima[1]}, Fecha: {ultima[2]}")
 
-
 def reportes_con_lambdas():
-    """
-    Esta es la función principal que se llama desde el menú.
-    Ahora lee los datos primero.
-    """
+    # Esta función SÍ carga todo en memoria a propósito para los reportes.
     funciones = leer_funciones()
-
     print("=============================================")
     print(" EJECUTANDO REPORTES CON FUNCIONES LAMBDA ")
     print("=============================================")
-
     id_obra = Main.ingreso_entero("Ingrese ID de obra para FILTRAR (ej: 1): ")
     funciones_filtradas = encontrar_funciones_por_obra(id_obra, funciones)
-
     obtener_fechas_como_objetos(funciones_filtradas)
-
     encontrar_ultima_funcion(funciones)
-
     input("\nPresione ENTER para continuar.")
