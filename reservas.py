@@ -2,7 +2,7 @@ import obras
 import re
 import Main
 import json
-import os  # <--- IMPORTANTE
+import os  
 
 ARCHIVO_RESERVAS = "archivos/reservas.txt"
 ARCHIVO_TEMP = "archivos/reservas_temp.txt"
@@ -32,10 +32,6 @@ butacas_estado = [
 
 
 def _obtener_ultimo_id(archivo, id_columna=0):
-    """
-    Lee el archivo linea por linea para encontrar el ID más alto
-    en la columna especificada, sin cargar todo a memoria.
-    """
     ultimo_id = 0
     try:
         with open(archivo, "r", encoding="utf-8") as f:
@@ -55,9 +51,6 @@ def _obtener_ultimo_id(archivo, id_columna=0):
 
 
 def leer_reservas():
-    """
-    Se mantiene igual, se usa para 'Mostrar Reservas' e inicializar butacas.
-    """
     reservas = []
     try:
         with open(ARCHIVO_RESERVAS, 'r', encoding='utf-8') as f:
@@ -85,9 +78,6 @@ def leer_reservas():
     return reservas
 
 def guardar_reservas(reservas):
-    """
-    Se mantiene, pero ya no es usada por crear/modificar/borrar.
-    """
     try:
         with open(ARCHIVO_RESERVAS, 'w', encoding='utf-8') as f:
             for reserva in reservas:
@@ -97,7 +87,7 @@ def guardar_reservas(reservas):
     except OSError as e:
         print(f"Error al guardar reservas: {e}")
 
-# ... (butaca_valida, buscar_pos, _construir_ids_obras, buscar_precio se mantienen igual) ...
+
 def butaca_valida(b):
     return re.match(r"^[A-Ha-h][1-8]$", b.strip()) is not None
 
@@ -203,17 +193,11 @@ def init_estado_desde_reservas():
                 butacas_estado[ff][cc] = "X"
             j += 1
         i += 1
-# ... (fin de funciones sin cambios) ...
+
 
 
 def crear_reserva():
-    """
-    (Refactorizado) Usa 'append' para agregar una nueva reserva.
-    """
     usuario = Main.ingreso_entero("Coloque el id de usuario: ")
-    
-    # 1. Obtener último ID de reserva (NR) eficientemente
-    # OJO: El ID de reserva (NR) está en la columna 1 (la segunda)
     ultimo_nr = _obtener_ultimo_id(ARCHIVO_RESERVAS, id_columna=1)
     nr = ultimo_nr + 1
         
@@ -256,7 +240,7 @@ def crear_reserva():
                         if butacas_estado[f][c] == "X":
                             print("Esa butaca ya está ocupada. Elegí otra.")
                         else:
-                            # Marcarla como ocupada en la matriz en memoria
+                        
                             butacas_estado[f][c] = "X" 
                             butacas_elegidas.append(butaca)
                             valida = True
@@ -271,8 +255,6 @@ def crear_reserva():
         total = precio * cant
         print(f"El precio de cada entrada es de ${precio}")
         print(f"El total a abonar es de ${total}")
-        
-        # 3. Guardar en modo 'append'
         reserva = [usuario, nr, id_obra_valido, cant, butacas_cadena, precio, total]
         linea_items = [str(item) for item in reserva]
         nueva_linea = ";".join(linea_items) + "\n"
@@ -289,12 +271,6 @@ def crear_reserva():
 
 
 def modificar_reserva():
-    """
-    (Refactorizado) Usa archivo temporal.
-    Nota: Esta modificación solo permite cambiar el usuario y la obra.
-    Modificar butacas o cantidad requeriría una lógica mucho más compleja
-    de liberación y re-selección que este patrón no simplifica.
-    """
     nr_modificar = Main.ingreso_entero("Ingrese el número de reserva que desea modificar: ")
     encontrado = False
 
@@ -369,9 +345,6 @@ def modificar_reserva():
 
 
 def borrar_reserva():
-    """
-    (Refactorizado) Usa archivo temporal para borrar.
-    """
     nr_borrar = Main.ingreso_entero("Ingrese el número de reserva que desea borrar: ")
     encontrado = False
     linea_borrada = None
