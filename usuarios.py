@@ -2,7 +2,7 @@ import re
 from funciones import leer_funciones
 from reservas import leer_reservas
 import Main
-import os  # <--- IMPORTANTE
+import os 
 
 ARCHIVO_USUARIOS = "archivos/usuarios.txt"
 ARCHIVO_TEMP = "archivos/usuarios_temp.txt"
@@ -12,10 +12,6 @@ patron_telefono = re.compile(r'^\d{8,12}$')
 
 
 def _obtener_ultimo_id(archivo, id_columna=0):
-    """
-    Lee el archivo linea por linea para encontrar el ID más alto
-    en la columna especificada, sin cargar todo a memoria.
-    """
     ultimo_id = 0
     try:
         with open(archivo, "r", encoding="utf-8") as f:
@@ -35,9 +31,6 @@ def _obtener_ultimo_id(archivo, id_columna=0):
 
 
 def leer_usuarios():
-    """
-    Se mantiene igual, se usa para 'Mostrar Usuarios' y reportes.
-    """
     usuarios = []
     try:
         with open(ARCHIVO_USUARIOS, 'r', encoding='utf-8') as f:
@@ -64,9 +57,6 @@ def leer_usuarios():
 
 
 def guardar_usuarios(usuarios):
-    """
-    Se mantiene, pero ya no es usada por crear/modificar/borrar.
-    """
     try:
         with open(ARCHIVO_USUARIOS, 'w', encoding='utf-8') as f:
             for usuario in usuarios:
@@ -112,9 +102,6 @@ def crear_usuario():
 
 
 def modificar_usuario():
-    """
-    (Refactorizado) Usa archivo temporal para modificar.
-    """
     id_modificar = Main.ingreso_entero("Ingrese el ID del usuario a modificar: ")
     encontrado = False
     
@@ -174,9 +161,6 @@ def modificar_usuario():
 
 
 def borrar_usuario():
-    """
-    (Refactorizado) Usa archivo temporal para borrar.
-    """
     id_borrar = Main.ingreso_entero("Ingrese el ID del usuario a borrar: ")
     encontrado = False
     
@@ -229,11 +213,9 @@ def borrar_usuario():
     input("Presione ENTER para continuar.")
 
 
-# --- Funciones de Reportes ---
-# Estas funciones SÍ necesitan cargar los datos en memoria para procesarlos.
+
 
 def usuarios_con_mas_reservas():
-    # Esta función necesita leer ambos archivos
     usuarios = leer_usuarios()
     lista_de_reservas = leer_reservas() 
     
@@ -268,7 +250,6 @@ promedio = lambda lista: sum(lista) / len(lista)
 
 
 def promedio_edad_por_funcion():
-    # Esta función necesita leer los 3 archivos
     usuarios = leer_usuarios()
     lista_de_funciones = leer_funciones()
     lista_de_reservas = leer_reservas()
@@ -310,7 +291,6 @@ def promedio_edad_por_funcion():
 
 
 def topTresUsuariosMasJovenes():
-    # Esta función SÍ carga todo en memoria a propósito
     usuarios = leer_usuarios()
     
     if not usuarios:
