@@ -21,34 +21,50 @@ def _obtener_ultimo_id(archivo, id_columna=0):
                         if id_actual > ultimo_id:
                             ultimo_id = id_actual
                     except (ValueError, IndexError):
-                        continue  # Ignorar lineas mal formadas
+                        continue
     except FileNotFoundError:
-        pass  # Si no hay archivo, el ultimo ID es 0
+        pass
     return ultimo_id
 
 
+
+def _procesar_linea_recursiva(archivo, lista_funciones):
+
+    linea = archivo.readline()  # Lee una línea
+
+    # Caso Base: Si la línea está vacía (fin de archivo), la recursión termina.
+    if not linea:
+        return
+
+    # Caso Recursivo: Procesar la línea y llamar de nuevo
+    linea = linea.strip()
+    if linea:
+        try:
+            partes = linea.split(";")
+            funcion = [int(partes[0]), int(partes[1]), partes[2]]
+            lista_funciones.append(funcion)  # Agrega el resultado a la lista
+        except (ValueError, IndexError):
+            print(
+                f"Advertencia: Se omitió una línea mal formada en {ARCHIVO_FUNCIONES}"
+            )
+
+    # Llama a la función para leer la siguiente línea
+    _procesar_linea_recursiva(archivo, lista_funciones)
+
+
 def leer_funciones():
-    funciones = []
+    funciones = []  # 1. Inicia la lista
     try:
         with open(ARCHIVO_FUNCIONES, "r", encoding="utf-8") as f:
-            for linea in f:
-                linea = linea.strip()
-                if linea:
-                    try:
-                        partes = linea.split(";")
-
-                        funcion = [int(partes[0]), int(partes[1]), partes[2]]
-                        funciones.append(funcion)
-                    except (ValueError, IndexError):
-                        print(
-                            f"Advertencia: Se omitió una línea mal formada en {ARCHIVO_FUNCIONES}"
-                        )
+            # 2. Inicia la recursión
+            _procesar_linea_recursiva(f, funciones)
     except FileNotFoundError:
         print(
             f"Nota: No se encontró {ARCHIVO_FUNCIONES}, se creará uno nuevo al guardar."
         )
 
-    return funciones
+    return funciones  
+
 
 
 def guardar_funciones(funciones):
@@ -63,11 +79,9 @@ def guardar_funciones(funciones):
 
 
 def crear_funcion():
-    # 1. Obtener el último ID leyendo el archivo eficientemente
     ultimo_id = _obtener_ultimo_id(ARCHIVO_FUNCIONES, id_columna=0)
     id_funcion = ultimo_id + 1
 
-    # 2. Pedir datos al usuario
     id_obra = Main.ingreso_entero("Ingrese el ID de la obra: ")
 
     fecha_valida = False
@@ -79,7 +93,6 @@ def crear_funcion():
         else:
             print("Formato inválido. Use YYYY-MM-DD (ejemplo: 2025-09-18).")
 
-    # 3. Abrir en modo 'append' (agregar) y escribir la nueva línea
     try:
         with open(ARCHIVO_FUNCIONES, "a", encoding="utf-8") as f:
             nueva_linea = f"{id_funcion};{id_obra};{fecha}\n"
@@ -120,7 +133,6 @@ def modificar_funcion():
                             "Ingrese nuevo ID de obra (enter para dejar igual): "
                         ).strip()
 
-                        # Mantener datos antiguos si no se ingresan nuevos
                         fecha_final = nuevaFecha if nuevaFecha != "" else partes[2]
                         obra_final = partes[1]
 
@@ -139,7 +151,7 @@ def modificar_funcion():
                         arch_temp.write(linea + "\n")
 
                 except (ValueError, IndexError):
-                    arch_temp.write(linea + "\n")  # Preservar lineas mal formadas
+                    arch_temp.write(linea + "\n")
 
     except FileNotFoundError:
         print(f"No se encontró el archivo {ARCHIVO_FUNCIONES}.")
@@ -148,7 +160,6 @@ def modificar_funcion():
         print(f"Error de E/S: {e}")
         return
 
-    # 4. Reemplazar el archivo original con el temporal
     if encontrada:
         try:
             os.remove(ARCHIVO_FUNCIONES)
@@ -157,7 +168,7 @@ def modificar_funcion():
             print(f"Error al reemplazar el archivo: {e}")
     else:
         print("Función no encontrada.")
-        os.remove(ARCHIVO_TEMP)  # Borrar el temporal si no se usó
+        os.remove(ARCHIVO_TEMP)
 
     input("Presione ENTER para continuar.")
 
@@ -190,7 +201,6 @@ def borrar_funcion():
                         if confirmacion == "s":
                             encontrado = True
                             print(f"La funcion {id_actual} fue eliminada.")
-                            # No escribimos la línea en arch_temp, omitiéndola
                         else:
                             print("Operación cancelada. La función no se borrará.")
                             arch_temp.write(linea + "\n")
@@ -198,7 +208,7 @@ def borrar_funcion():
                         arch_temp.write(linea + "\n")
 
                 except (ValueError, IndexError):
-                    arch_temp.write(linea + "\n")  # Preservar lineas mal formadas
+                    arch_temp.write(linea + "\n")
 
     except FileNotFoundError:
         print(f"No se encontró el archivo {ARCHIVO_FUNCIONES}.")
@@ -207,7 +217,6 @@ def borrar_funcion():
         print(f"Error de E/S: {e}")
         return
 
-    # 4. Reemplazar el archivo original con el temporal
     if encontrado:
         try:
             os.remove(ARCHIVO_FUNCIONES)
@@ -215,11 +224,12 @@ def borrar_funcion():
         except OSError as e:
             print(f"Error al reemplazar el archivo: {e}")
     else:
-        if "id_actual" in locals() and id_actual != id_borrar:
+        if 'id_actual' in locals() and id_actual != id_borrar:
             print("Función no encontrada.")
         os.remove(ARCHIVO_TEMP)
 
     input("Presione ENTER para continuar.")
+
 
 
 def encontrar_funciones_por_obra(id_obra_buscada, funciones):
@@ -262,6 +272,7 @@ def encontrar_ultima_funcion(funciones):
 
 def reportes_con_lambdas():
     # Esta función SÍ carga todo en memoria a propósito para los reportes.
+    # Ahora usará la nueva 'leer_funciones()' recursiva.
     funciones = leer_funciones()
     print("=============================================")
     print(" EJECUTANDO REPORTES CON FUNCIONES LAMBDA ")
