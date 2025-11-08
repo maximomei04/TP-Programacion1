@@ -1,5 +1,5 @@
 import json
-from Main import limpiar_terminal, ingreso_texto,ingreso_entero
+from Main import limpiar_terminal, ingreso_texto, ingreso_entero
 
 
 def mostrar_obras(archivo, mensaje="Presione ENTER para continuar", tipo=None):
@@ -96,7 +96,6 @@ def lista_IDs(lista_dict):
     for i in lista_dict:
         IDs.append(i["ID"])
     return IDs
-
 
 
 def modificar_obra(archivo):
@@ -249,4 +248,3 @@ def suma_lista(lista):
         return 0
     else:
         return lista[0] + suma_lista(lista[1:])
-

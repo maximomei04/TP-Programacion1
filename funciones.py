@@ -132,14 +132,14 @@ def modificar_funcion():
                                     "ID de obra inválido, se mantendrá el ID original."
                                 )
                                 obra_final = partes[1]
-                        
+
                         arch_temp.write(f"{id_actual};{obra_final};{fecha_final}\n")
                         print("Función modificada con éxito.")
                     else:
                         arch_temp.write(linea + "\n")
 
                 except (ValueError, IndexError):
-                    arch_temp.write(linea + "\n") # Preservar lineas mal formadas
+                    arch_temp.write(linea + "\n")  # Preservar lineas mal formadas
 
     except FileNotFoundError:
         print(f"No se encontró el archivo {ARCHIVO_FUNCIONES}.")
@@ -174,7 +174,7 @@ def borrar_funcion():
                 linea = linea.strip()
                 if not linea:
                     continue
-                
+
                 try:
                     partes = linea.split(";")
                     id_actual = int(partes[0])
@@ -196,9 +196,9 @@ def borrar_funcion():
                             arch_temp.write(linea + "\n")
                     else:
                         arch_temp.write(linea + "\n")
-                
+
                 except (ValueError, IndexError):
-                    arch_temp.write(linea + "\n") # Preservar lineas mal formadas
+                    arch_temp.write(linea + "\n")  # Preservar lineas mal formadas
 
     except FileNotFoundError:
         print(f"No se encontró el archivo {ARCHIVO_FUNCIONES}.")
@@ -215,8 +215,8 @@ def borrar_funcion():
         except OSError as e:
             print(f"Error al reemplazar el archivo: {e}")
     else:
-        if 'id_actual' in locals() and id_actual != id_borrar:
-             print("Función no encontrada.")
+        if "id_actual" in locals() and id_actual != id_borrar:
+            print("Función no encontrada.")
         os.remove(ARCHIVO_TEMP)
 
     input("Presione ENTER para continuar.")
@@ -232,6 +232,7 @@ def encontrar_funciones_por_obra(id_obra_buscada, funciones):
     else:
         Main.mostrar_matriz(funciones_filtradas, ("ID Función", "ID Obra", "Fecha"))
     return funciones_filtradas
+
 
 def obtener_fechas_como_objetos(lista_funciones):
     print(f"\n--- Fechas convertidas a objetos datetime (usando MAP) ---")
@@ -249,6 +250,7 @@ def obtener_fechas_como_objetos(lista_funciones):
             f"Error al convertir fechas: {e}. Asegúrese que el formato sea YYYY-MM-DD."
         )
 
+
 def encontrar_ultima_funcion(funciones):
     if not funciones:
         print("\nNo hay funciones para comparar.")
@@ -256,6 +258,7 @@ def encontrar_ultima_funcion(funciones):
     ultima = reduce(lambda f1, f2: f1 if f1[2] > f2[2] else f2, funciones)
     print(f"\n--- Última función programada (usando REDUCE) ---")
     print(f"ID Función: {ultima[0]}, Obra: {ultima[1]}, Fecha: {ultima[2]}")
+
 
 def reportes_con_lambdas():
     # Esta función SÍ carga todo en memoria a propósito para los reportes.

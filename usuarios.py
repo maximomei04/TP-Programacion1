@@ -2,13 +2,13 @@ import re
 from funciones import leer_funciones
 from reservas import leer_reservas
 import Main
-import os 
+import os
 
 ARCHIVO_USUARIOS = "archivos/usuarios.txt"
 ARCHIVO_TEMP = "archivos/usuarios_temp.txt"
 
-patron_email = re.compile(r'^[\w\.-]+@[\w\.-]+\.\w+$')
-patron_telefono = re.compile(r'^\d{8,12}$')
+patron_email = re.compile(r"^[\w\.-]+@[\w\.-]+\.\w+$")
+patron_telefono = re.compile(r"^\d{8,12}$")
 
 
 def _obtener_ultimo_id(archivo, id_columna=0):
@@ -33,32 +33,36 @@ def _obtener_ultimo_id(archivo, id_columna=0):
 def leer_usuarios():
     usuarios = []
     try:
-        with open(ARCHIVO_USUARIOS, 'r', encoding='utf-8') as f:
+        with open(ARCHIVO_USUARIOS, "r", encoding="utf-8") as f:
             for linea in f:
-                linea = linea.strip() 
-                if linea: 
+                linea = linea.strip()
+                if linea:
                     try:
-                        partes = linea.split(';')
+                        partes = linea.split(";")
 
                         usuario = [
-                            int(partes[0]),   
-                            partes[1],        
-                            partes[2],        
-                            partes[3],        
-                            int(partes[4])    
+                            int(partes[0]),
+                            partes[1],
+                            partes[2],
+                            partes[3],
+                            int(partes[4]),
                         ]
                         usuarios.append(usuario)
                     except (ValueError, IndexError):
-                        print(f"Error: Se omitió una línea mal formada en {ARCHIVO_USUARIOS}")
+                        print(
+                            f"Error: Se omitió una línea mal formada en {ARCHIVO_USUARIOS}"
+                        )
     except FileNotFoundError:
-        print(f"Nota: No se encontró {ARCHIVO_USUARIOS}, se creará uno nuevo al guardar.")
+        print(
+            f"Nota: No se encontró {ARCHIVO_USUARIOS}, se creará uno nuevo al guardar."
+        )
 
     return usuarios
 
 
 def guardar_usuarios(usuarios):
     try:
-        with open(ARCHIVO_USUARIOS, 'w', encoding='utf-8') as f:
+        with open(ARCHIVO_USUARIOS, "w", encoding="utf-8") as f:
             for usuario in usuarios:
                 linea_items = [str(item) for item in usuario]
                 linea = ";".join(linea_items)
@@ -73,7 +77,7 @@ def crear_usuario():
     """
     # 1. Obtener último ID eficientemente
     id_usuario = _obtener_ultimo_id(ARCHIVO_USUARIOS, id_columna=0) + 1
-    
+
     # 2. Pedir datos
     nombre = input("Nombre del usuario: ")
 
@@ -104,17 +108,17 @@ def crear_usuario():
 def modificar_usuario():
     id_modificar = Main.ingreso_entero("Ingrese el ID del usuario a modificar: ")
     encontrado = False
-    
+
     try:
         with open(ARCHIVO_USUARIOS, "r", encoding="utf-8") as arch_orig, open(
             ARCHIVO_TEMP, "w", encoding="utf-8"
         ) as arch_temp:
-            
+
             for linea in arch_orig:
                 linea = linea.strip()
                 if not linea:
                     continue
-                
+
                 try:
                     partes = linea.split(";")
                     id_actual = int(partes[0])
@@ -122,22 +126,26 @@ def modificar_usuario():
                     if id_actual == id_modificar:
                         encontrado = True
                         print(f"Usuario encontrado: {partes[1]}")
-                        
+
                         nuevo_nombre = input("Nuevo nombre (enter para dejar igual): ")
                         nuevo_email = input("Nuevo email (enter para dejar igual): ")
-                        nuevo_telefono = input("Nuevo teléfono (enter para dejar igual): ")
+                        nuevo_telefono = input(
+                            "Nuevo teléfono (enter para dejar igual): "
+                        )
                         # Asumimos que la edad no se modifica
-                        
+
                         nombre_final = nuevo_nombre if nuevo_nombre != "" else partes[1]
                         email_final = nuevo_email if nuevo_email != "" else partes[2]
-                        telefono_final = nuevo_telefono if nuevo_telefono != "" else partes[3]
-                        
+                        telefono_final = (
+                            nuevo_telefono if nuevo_telefono != "" else partes[3]
+                        )
+
                         nueva_linea = f"{id_actual};{nombre_final};{email_final};{telefono_final};{partes[4]}\n"
                         arch_temp.write(nueva_linea)
                         print("Usuario modificado con éxito.")
                     else:
                         arch_temp.write(linea + "\n")
-                
+
                 except (ValueError, IndexError):
                     arch_temp.write(linea + "\n")
 
@@ -156,31 +164,35 @@ def modificar_usuario():
     else:
         print("Usuario no encontrado.")
         os.remove(ARCHIVO_TEMP)
-        
+
     input("Presione ENTER para continuar.")
 
 
 def borrar_usuario():
     id_borrar = Main.ingreso_entero("Ingrese el ID del usuario a borrar: ")
     encontrado = False
-    
+
     try:
         with open(ARCHIVO_USUARIOS, "r", encoding="utf-8") as arch_orig, open(
             ARCHIVO_TEMP, "w", encoding="utf-8"
         ) as arch_temp:
-            
+
             for linea in arch_orig:
                 linea = linea.strip()
                 if not linea:
                     continue
-                
+
                 try:
                     partes = linea.split(";")
                     id_actual = int(partes[0])
 
                     if id_actual == id_borrar:
-                        confirmacion = input(f"¿Seguro que quiere borrar a '{partes[1]}'? (s/n): ").strip().lower()
-                        if confirmacion == 's':
+                        confirmacion = (
+                            input(f"¿Seguro que quiere borrar a '{partes[1]}'? (s/n): ")
+                            .strip()
+                            .lower()
+                        )
+                        if confirmacion == "s":
                             encontrado = True
                             print(f"Usuario {partes[1]} fue eliminado.")
                             # No escribir la línea en el temporal
@@ -189,7 +201,7 @@ def borrar_usuario():
                             arch_temp.write(linea + "\n")
                     else:
                         arch_temp.write(linea + "\n")
-                
+
                 except (ValueError, IndexError):
                     arch_temp.write(linea + "\n")
 
@@ -206,19 +218,17 @@ def borrar_usuario():
         except OSError as e:
             print(f"Error al reemplazar el archivo: {e}")
     else:
-        if 'id_actual' in locals() and id_actual != id_borrar:
-             print("Usuario no encontrado.")
+        if "id_actual" in locals() and id_actual != id_borrar:
+            print("Usuario no encontrado.")
         os.remove(ARCHIVO_TEMP)
-        
+
     input("Presione ENTER para continuar.")
-
-
 
 
 def usuarios_con_mas_reservas():
     usuarios = leer_usuarios()
-    lista_de_reservas = leer_reservas() 
-    
+    lista_de_reservas = leer_reservas()
+
     conteo_reservas = {}
     for reserva in lista_de_reservas:
         id_usuario = reserva[0]
@@ -242,7 +252,7 @@ def usuarios_con_mas_reservas():
     else:
         for nombre in usuarios_max:
             print(f"- {nombre}")
-            
+
     input("Presione ENTER para continuar.")
 
 
@@ -258,48 +268,54 @@ def promedio_edad_por_funcion():
         print("No hay usuarios registrados para calcular promedios.")
         input("Presione ENTER para continuar.")
         return
-        
+
     print("\n--- Promedio de Edad por Función ---")
     for funcion in lista_de_funciones:
-        id_funcion = funcion[0]     
-        id_obra_funcion = funcion[1] 
-        nombre_funcion = f"Función {id_funcion} (Obra ID: {id_obra_funcion}) - {funcion[2]}"
+        id_funcion = funcion[0]
+        id_obra_funcion = funcion[1]
+        nombre_funcion = (
+            f"Función {id_funcion} (Obra ID: {id_obra_funcion}) - {funcion[2]}"
+        )
 
         edades = []
-        
+
         for reserva in lista_de_reservas:
-            id_obra_reserva = reserva[2] 
-            
-            if id_obra_reserva == id_obra_funcion:    
+            id_obra_reserva = reserva[2]
+
+            if id_obra_reserva == id_obra_funcion:
                 id_usuario_reserva = reserva[0]
-                
+
                 for usuario in usuarios:
                     if usuario[0] == id_usuario_reserva:
-                        edades.append(usuario[4]) 
-                        break 
+                        edades.append(usuario[4])
+                        break
         try:
             prom = promedio(edades)
-            print(f"{nombre_funcion}: promedio de edad = {prom:.2f} años (sobre {len(edades)} reservas)")
-            
-            primeras_edades = edades[:3] 
+            print(
+                f"{nombre_funcion}: promedio de edad = {prom:.2f} años (sobre {len(edades)} reservas)"
+            )
+
+            primeras_edades = edades[:3]
             print(f"Primeras 3 edades en reservar: {primeras_edades}")
 
         except ZeroDivisionError:
             print(f"{nombre_funcion}: no hay reservas registradas para esta función.")
-            
+
     input("Presione ENTER para continuar.")
 
 
 def topTresUsuariosMasJovenes():
     usuarios = leer_usuarios()
-    
+
     if not usuarios:
         print("No hay usuarios registrados")
         input("Preseione ENTER para continuar")
         return
-    
-    usuarios.sort(key=lambda usuario:usuario[4])
+
+    usuarios.sort(key=lambda usuario: usuario[4])
     top_3_jovenes = usuarios[:3]
 
     print("Top 3 usuarios más jovenes")
-    Main.mostrar_matriz(top_3_jovenes,("ID Usuario", "Nombre", "Email", "Teléfono", "Edad"))
+    Main.mostrar_matriz(
+        top_3_jovenes, ("ID Usuario", "Nombre", "Email", "Teléfono", "Edad")
+    )
