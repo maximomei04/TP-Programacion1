@@ -1,8 +1,9 @@
-import Main
-import re
+import re, os
 from functools import reduce
 from datetime import datetime
-import os
+
+from utilidades import *
+
 
 ARCHIVO_FUNCIONES = "archivos/funciones.txt"
 ARCHIVO_TEMP = "archivos/funciones_temp.txt"
@@ -80,7 +81,7 @@ def crear_funcion():
     ultimo_id = _obtener_ultimo_id(ARCHIVO_FUNCIONES, id_columna=0)
     id_funcion = ultimo_id + 1
 
-    id_obra = Main.ingreso_entero("Ingrese el ID de la obra: ")
+    id_obra = ingreso_entero("Ingrese el ID de la obra: ")
 
     fecha_valida = False
     fecha = ""
@@ -103,7 +104,7 @@ def crear_funcion():
 
 
 def modificar_funcion():
-    id_modificar = Main.ingreso_entero("Ingrese el ID de la funcion a modificar: ")
+    id_modificar = ingreso_entero("Ingrese el ID de la funcion a modificar: ")
     encontrada = False
 
     try:
@@ -172,7 +173,7 @@ def modificar_funcion():
 
 
 def borrar_funcion():
-    id_borrar = Main.ingreso_entero("Ingrese el ID de la funcion a borrar: ")
+    id_borrar = ingreso_entero("Ingrese el ID de la funcion a borrar: ")
     encontrado = False
 
     try:
@@ -237,7 +238,7 @@ def encontrar_funciones_por_obra(id_obra_buscada, funciones):
     if not funciones_filtradas:
         print("No se encontraron funciones para esa obra.")
     else:
-        Main.mostrar_matriz(funciones_filtradas, ("ID Función", "ID Obra", "Fecha"))
+        mostrar_matriz(funciones_filtradas, ("ID Función", "ID Obra", "Fecha"))
     return funciones_filtradas
 
 
@@ -274,7 +275,7 @@ def reportes_con_lambdas():
     print("=============================================")
     print(" EJECUTANDO REPORTES CON FUNCIONES LAMBDA ")
     print("=============================================")
-    id_obra = Main.ingreso_entero("Ingrese ID de obra para FILTRAR (ej: 1): ")
+    id_obra = ingreso_entero("Ingrese ID de obra para FILTRAR (ej: 1): ")
     funciones_filtradas = encontrar_funciones_por_obra(id_obra, funciones)
     obtener_fechas_como_objetos(funciones_filtradas)
     encontrar_ultima_funcion(funciones)

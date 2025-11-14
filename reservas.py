@@ -1,13 +1,11 @@
+import re, os, json
+
 import obras
-import re
-import Main
-import json
-import os
+from utilidades import *
 
 ARCHIVO_RESERVAS = "archivos/reservas.txt"
 ARCHIVO_TEMP = "archivos/reservas_temp.txt"
 
-# ... (butacas_visuales y butacas_estado se mantienen igual) ...
 butacas_visuales = [
     [("A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8")],
     [("B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8")],
@@ -18,6 +16,7 @@ butacas_visuales = [
     [("G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8")],
     [("H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8")],
 ]
+
 butacas_estado = [
     ["0", "0", "0", "0", "0", "0", "0", "0"],
     ["0", "0", "0", "0", "0", "0", "0", "0"],
@@ -28,7 +27,6 @@ butacas_estado = [
     ["0", "0", "0", "0", "0", "0", "0", "0"],
     ["0", "0", "0", "0", "0", "0", "0", "0"],
 ]
-# ... (fin de las matrices de butacas) ...
 
 
 def _obtener_ultimo_id(archivo, id_columna=0):
@@ -215,7 +213,7 @@ def init_estado_desde_reservas():
 
 
 def crear_reserva():
-    usuario = Main.ingreso_entero("Coloque el id de usuario: ")
+    usuario = ingreso_entero("Coloque el id de usuario: ")
     ultimo_nr = _obtener_ultimo_id(ARCHIVO_RESERVAS, id_columna=1)
     nr = ultimo_nr + 1
 
@@ -227,15 +225,15 @@ def crear_reserva():
     id_obra_valido = 0
     ok = False
     while ok == False:
-        id_obra_valido = Main.ingreso_entero("Id de la obra: ")
+        id_obra_valido = ingreso_entero("Id de la obra: ")
         if id_obra_valido in ids_obras:
             ok = True
         else:
             print("ID de obra inexistente. Mostrá las obras y elegí un ID válido.")
 
-    cant = Main.ingreso_entero("Cuántas entradas deseas reservar (1 o más): ")
+    cant = ingreso_entero("Cuántas entradas deseas reservar (1 o más): ")
     while cant <= 0:
-        cant = Main.ingreso_entero("La cantidad debe ser un entero positivo: ")
+        cant = ingreso_entero("La cantidad debe ser un entero positivo: ")
 
     mostrar_butacas()
     butacas_elegidas = []
@@ -289,9 +287,7 @@ def crear_reserva():
 
 
 def modificar_reserva():
-    nr_modificar = Main.ingreso_entero(
-        "Ingrese el número de reserva que desea modificar: "
-    )
+    nr_modificar = ingreso_entero("Ingrese el número de reserva que desea modificar: ")
     encontrado = False
 
     try:
@@ -371,7 +367,7 @@ def modificar_reserva():
 
 
 def borrar_reserva():
-    nr_borrar = Main.ingreso_entero("Ingrese el número de reserva que desea borrar: ")
+    nr_borrar = ingreso_entero("Ingrese el número de reserva que desea borrar: ")
     encontrado = False
     linea_borrada = None
 

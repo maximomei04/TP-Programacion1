@@ -1,5 +1,6 @@
 import json
-from Main import limpiar_terminal, ingreso_texto, ingreso_entero
+
+from utilidades import *
 
 
 def mostrar_obras(archivo, mensaje="Presione ENTER para continuar", tipo=None):

@@ -1,8 +1,9 @@
-import re
-from funciones import leer_funciones
+import re, os
+
+from funciones import *
 from reservas import leer_reservas
-import Main
-import os
+from utilidades import *
+
 
 ARCHIVO_USUARIOS = "archivos/usuarios.txt"
 ARCHIVO_TEMP = "archivos/usuarios_temp.txt"
@@ -91,7 +92,7 @@ def crear_usuario():
         print("Teléfono inválido. Solo números (8-12 dígitos).")
         telefono = input("Teléfono del usuario: ")
 
-    edad = Main.ingreso_entero("Edad del usuario: ")
+    edad = ingreso_entero("Edad del usuario: ")
 
     # 3. Guardar en modo 'append'
     try:
@@ -106,7 +107,7 @@ def crear_usuario():
 
 
 def modificar_usuario():
-    id_modificar = Main.ingreso_entero("Ingrese el ID del usuario a modificar: ")
+    id_modificar = ingreso_entero("Ingrese el ID del usuario a modificar: ")
     encontrado = False
 
     try:
@@ -169,7 +170,7 @@ def modificar_usuario():
 
 
 def borrar_usuario():
-    id_borrar = Main.ingreso_entero("Ingrese el ID del usuario a borrar: ")
+    id_borrar = ingreso_entero("Ingrese el ID del usuario a borrar: ")
     encontrado = False
 
     try:
@@ -316,6 +317,6 @@ def topTresUsuariosMasJovenes():
     top_3_jovenes = usuarios[:3]
 
     print("Top 3 usuarios más jovenes")
-    Main.mostrar_matriz(
+    mostrar_matriz(
         top_3_jovenes, ("ID Usuario", "Nombre", "Email", "Teléfono", "Edad")
     )
