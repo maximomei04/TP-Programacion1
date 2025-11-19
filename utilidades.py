@@ -60,5 +60,7 @@ def ingreso_texto(
     return texto
 
 
-# def confirmacion():
-#     return booleano
+def confirmacion(mensaje="Seguro? [Y/n]: "):
+    """Solicita confirmación, devuelve un True o False"""
+    respuesta = input(mensaje).strip().lower()
+    return respuesta in ("", "s")

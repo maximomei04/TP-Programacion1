@@ -218,12 +218,8 @@ def borrar_obra(ruta):
         return
 
     indice = IDs.index(id_borrar)
-    confirmacion = (
-        input(f'¿Seguro que quiere borrar "{obras[indice]["Nombre"]}"? (s/n): ')
-        .strip()
-        .lower()
-    )
-    if confirmacion == "s":
+
+    if confirmacion(f'¿Seguro que quiere borrar "{obras[indice]["Nombre"]}"? (S/n): '):
         obras.pop(indice)
         print("Obra eliminada.")
     else:
