@@ -1,7 +1,7 @@
 import re, os
 
 from funciones import *
-from reservas import leer_reservas
+from reservas import *
 from utilidades import *
 
 

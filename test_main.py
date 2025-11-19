@@ -1,5 +1,6 @@
 import re
-from usuarios import patron_email, patron_telefono, promedio
+
+from usuarios import *
 
 
 # Prueba 1 patron email

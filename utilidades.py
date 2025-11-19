@@ -53,8 +53,12 @@ def ingreso_texto(
     texto = ""
     while True:
         texto = input(mensaje).strip()
-        if texto == "" and vacio == False:
+        if texto == "" and vacio is False:
             input(error)
         else:
             break
     return texto
+
+
+# def confirmacion():
+#     return booleano
