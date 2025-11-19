@@ -84,7 +84,6 @@ def main():
 
                 elif opcion == "2":  # Opción 2
                     agregar_obras("archivos/obras.json")
-                    mostrar_obras("archivos/obras.json")
 
                 elif opcion == "3":  # Opción 3
                     modificar_obra("archivos/obras.json")
