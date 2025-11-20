@@ -22,26 +22,28 @@ def limpiar_terminal(segundos=0):
         os.system("clear")
 
 
-def ingreso_entero(mensaje="Ingrese un número entero: ", vacio=True):
+def ingreso_entero(mensaje="Ingrese un número entero: ", vacio=False):
     """Solamente permite ingresar enteros positivos. Devuelve un int."""
     while True:
-        try:
-            valor_ingresado = input(mensaje).strip()
-            if vacio and valor_ingresado == "":
-                return ""
+        valor_ingresado = input(mensaje).strip()
 
+        if valor_ingresado == "" and vacio is True:
+            return ""
+
+        try:
             valor_entero = int(valor_ingresado)
 
             if valor_entero <= 0:
                 raise ValueError
-            break
+
+            return valor_entero
+
         except ValueError:
             print(
                 "Error: Ingreso inválido, solamente ingresar numeros enteros positivos"
             )
         except:
             print("Error inesperado")
-    return valor_entero
 
 
 def ingreso_texto(
