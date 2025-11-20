@@ -125,9 +125,14 @@ def lista_IDs(lista_dict):
     return IDs
 
 
-# def cambiar_mantener(dato_cambiar, mensaje):
-
-#     return
+def modificar_campo(obras, indice, campo, mensaje, funcion_ingreso):
+    """Confirmar si modificar el campo o mantenerlo"""
+    valor_actual = obras[indice][campo]
+    nuevo_valor = funcion_ingreso(mensaje + f"{valor_actual}'): ", vacio=True)
+    if nuevo_valor is "":
+        print(f"Se mantiene: {obras[indice][campo]}")
+    else:
+        obras[indice][campo] = nuevo_valor
 
 
 def modificar_obra(ruta):
@@ -144,47 +149,30 @@ def modificar_obra(ruta):
         )
         if id_mod != "":
             break
+
     IDs = lista_IDs(obras)
+
     if id_mod not in IDs:
         input(
             "No se encontró ninguna obra con el ID ingresado.\n"
             "Presione ENTER para continuar."
         )
         return
+
     indice = IDs.index(id_mod)
 
-    nuevo_nombre = ingreso_texto(  # Nombre
-        f"Nuevo Nombre (ENTER para dejar '{obras[indice]['Nombre']}'): ", vacio=True
+    modificar_campo(
+        obras, indice, "Nombre", "Nuevo Nombre (ENTER para dejar '", ingreso_texto
     )
-    if nuevo_nombre == "":
-        print("Se mantiene el Nombre actual")
-    else:
-        obras[indice]["Nombre"] = nuevo_nombre
-
-    nuevo_precio = ingreso_entero(  # Precio
-        f"Desea modificar el Precio? (ENTER para dejar ${obras[indice]['Precio']}): "
+    modificar_campo(
+        obras, indice, "Precio", "Nuevo Precio (ENTER para dejar '", ingreso_texto
     )
-    if nuevo_precio == "":
-        print("Se mantiene el Precio actual.")
-    else:
-        obras[indice]["Precio"] = nuevo_precio
-
-    nueva_categoria = ingreso_texto(  # Categoria
-        f"Nueva Categoría (ENTER para dejar '{obras[indice]['Categoria']}'): ",
-        vacio=True,
+    modificar_campo(
+        obras, indice, "Categoria", "Nueva Categoria (ENTER para dejar '", ingreso_texto
     )
-    if nueva_categoria == "":
-        print("Se mantiene la Categoria actual")
-    else:
-        obras[indice]["Categoria"] = nueva_categoria
-
-    nueva_duracion = ingreso_entero(  # Duracion
-        f"Desea modificar la Duracion? (ENTER para dejar ${obras[indice]['Duracion']}): "
+    modificar_campo(
+        obras, indice, "Duracion", "Nueva Duracion (ENTER para dejar '", ingreso_texto
     )
-    if nueva_duracion == "":
-        print("Se mantiene la Duracion actual.")
-    else:
-        obras[indice]["Duracion"] = nueva_duracion
 
     modificar_json(ruta, obras)
 
