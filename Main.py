@@ -217,7 +217,7 @@ def main():
                     print("[5] Mostrar promedio de edad de Usuarios en la funcion")
                     print("[6] Usuarios con mas Reservas")
                     print("[7] Top tres usuarios mas jovenes")
-                    print("[8] Reporte Cruzado (Usuarios y sus Obras)")  # NUEVO
+                    print("[8] Reporte Cruzado (Usuarios y sus reservas)")  #cambio para final
                     print("---------------------------")
                     print("[0] Volver al menú anterior")
                     print("---------------------------")
