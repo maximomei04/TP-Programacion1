@@ -1,7 +1,9 @@
 import re, os
 import json
+
 # Importaciones locales se harán dentro de funciones donde haga falta para evitar circularidad
 from utilidades import *
+
 # Importamos funciones y reservas solo para lectura si es necesario, pero cuidado con circulares
 # Mejor leer archivos raw o import local
 
@@ -10,6 +12,7 @@ ARCHIVO_TEMP = "archivos/usuarios_temp.txt"
 
 patron_email = re.compile(r"^[\w\.-]+@[\w\.-]+\.\w+$")
 patron_telefono = re.compile(r"^\d{8,12}$")
+
 
 def _obtener_ultimo_id(archivo, id_columna=0):
     ultimo_id = 0
@@ -24,10 +27,11 @@ def _obtener_ultimo_id(archivo, id_columna=0):
                         if id_actual > ultimo_id:
                             ultimo_id = id_actual
                     except (ValueError, IndexError):
-                        continue 
+                        continue
     except FileNotFoundError:
-        pass 
+        pass
     return ultimo_id
+
 
 def leer_usuarios():
     usuarios = []
@@ -38,7 +42,13 @@ def leer_usuarios():
                 if linea:
                     try:
                         partes = linea.split(";")
-                        usuario = [int(partes[0]), partes[1], partes[2], partes[3], int(partes[4])]
+                        usuario = [
+                            int(partes[0]),
+                            partes[1],
+                            partes[2],
+                            partes[3],
+                            int(partes[4]),
+                        ]
                         usuarios.append(usuario)
                     except (ValueError, IndexError):
                         pass
@@ -46,10 +56,11 @@ def leer_usuarios():
         pass
     return usuarios
 
+
 def crear_usuario():
     id_usuario = _obtener_ultimo_id(ARCHIVO_USUARIOS, id_columna=0) + 1
     nombre = input("Nombre del usuario: ")
-    
+
     email = input("Email del usuario: ")
     while not patron_email.match(email):
         print("Email inválido.")
@@ -71,14 +82,18 @@ def crear_usuario():
         print(f"Error: {e}")
     input("Presione ENTER.")
 
+
 def modificar_usuario():
     # (Código original mantenido resumido por espacio, funcionalmente igual)
     id_mod = ingreso_entero("ID usuario a modificar: ")
     encontrado = False
     try:
-        with open(ARCHIVO_USUARIOS, "r", encoding="utf-8") as orig, open(ARCHIVO_TEMP, "w", encoding="utf-8") as temp:
+        with open(ARCHIVO_USUARIOS, "r", encoding="utf-8") as orig, open(
+            ARCHIVO_TEMP, "w", encoding="utf-8"
+        ) as temp:
             for linea in orig:
-                if not linea.strip(): continue
+                if not linea.strip():
+                    continue
                 p = linea.strip().split(";")
                 if int(p[0]) == id_mod:
                     encontrado = True
@@ -86,14 +101,15 @@ def modificar_usuario():
                     nn = input("Nuevo nombre: ")
                     nm = input("Nuevo mail: ")
                     nt = input("Nuevo tel: ")
-                    
+
                     nf = nn if nn else p[1]
                     mf = nm if nm else p[2]
                     tf = nt if nt else p[3]
                     temp.write(f"{id_mod};{nf};{mf};{tf};{p[4]}\n")
                 else:
                     temp.write(linea)
-    except: pass
+    except:
+        pass
 
     if encontrado:
         os.remove(ARCHIVO_USUARIOS)
@@ -104,23 +120,28 @@ def modificar_usuario():
         print("No encontrado.")
     input("ENTER.")
 
+
 def borrar_usuario():
     id_borrar = ingreso_entero("ID borrar: ")
     encontrado = False
     try:
-        with open(ARCHIVO_USUARIOS, "r", encoding="utf-8") as orig, open(ARCHIVO_TEMP, "w", encoding="utf-8") as temp:
+        with open(ARCHIVO_USUARIOS, "r", encoding="utf-8") as orig, open(
+            ARCHIVO_TEMP, "w", encoding="utf-8"
+        ) as temp:
             for linea in orig:
-                if not linea.strip(): continue
+                if not linea.strip():
+                    continue
                 p = linea.strip().split(";")
                 if int(p[0]) == id_borrar:
-                    if input("Seguro? (s/n): ") == 's':
+                    if input("Seguro? (s/n): ") == "s":
                         encontrado = True
                     else:
                         temp.write(linea)
                 else:
                     temp.write(linea)
-    except: pass
-    
+    except:
+        pass
+
     if encontrado:
         os.remove(ARCHIVO_USUARIOS)
         os.rename(ARCHIVO_TEMP, ARCHIVO_USUARIOS)
@@ -129,10 +150,12 @@ def borrar_usuario():
         os.remove(ARCHIVO_TEMP)
     input("ENTER.")
 
+
 # --- REPORTES CON CONJUNTOS (MANTENIDOS) ---
 def usuarios_con_mas_reservas():
     # Import local para romper ciclo
-    from reservas import leer_reservas 
+    from reservas import leer_reservas
+
     usuarios = leer_usuarios()
     reservas = leer_reservas()
 
@@ -155,16 +178,19 @@ def usuarios_con_mas_reservas():
             usuarios_max.add(u[1])
 
     print(f"Usuarios con más reservas ({max_res}):")
-    for n in usuarios_max: print(f"- {n}")
+    for n in usuarios_max:
+        print(f"- {n}")
     input("ENTER.")
 
+
 promedio = lambda lista: sum(lista) / len(lista) if len(lista) > 0 else 0
+
 
 def promedio_edad_por_funcion():
     # Imports locales
     from reservas import leer_reservas
     from funciones import leer_funciones
-    
+
     us = leer_usuarios()
     fs = leer_funciones()
     rs = leer_reservas()
@@ -175,28 +201,33 @@ def promedio_edad_por_funcion():
         # Filtramos reservas para esa obra (asumiendo logica original del TP)
         # NOTA: La logica original ligaba usuario->reserva->obra, no directamente a función específica fecha.
         # Mantengo la logica original.
-        
+
         edades = []
         for r in rs:
-            if r[2] == id_obra_f: # Misma obra
+            if r[2] == id_obra_f:  # Misma obra
                 uid = r[0]
                 for u in us:
                     if u[0] == uid:
                         edades.append(u[4])
                         break
-        
+
         if edades:
-            print(f"Func {id_f} (Obra {id_obra_f}): Promedio {promedio(edades):.1f} años.")
+            print(
+                f"Func {id_f} (Obra {id_obra_f}): Promedio {promedio(edades):.1f} años."
+            )
         else:
             print(f"Func {id_f}: Sin datos.")
     input("ENTER.")
 
+
 def topTresUsuariosMasJovenes():
     us = leer_usuarios()
-    if not us: return
+    if not us:
+        return
     us.sort(key=lambda u: u[4])
     print("Top 3 Jóvenes:")
     mostrar_matriz(us[:3], ("ID", "Nombre", "Email", "Tel", "Edad"))
+
 
 # -----------------------------------------------------------------------
 # NUEVO: REPORTE CRUZADO (CONSULTA CRUZADA)
@@ -207,15 +238,15 @@ def reporte_cruzado_usuarios_obras():
     Usa Listas por Comprensión.
     """
     from reservas import leer_reservas
-    
+
     limpiar_terminal()
     print("=========================================")
     print("   REPORTE CRUZADO: USUARIOS <-> OBRAS   ")
     print("=========================================")
-    
+
     users = leer_usuarios()
     res = leer_reservas()
-    
+
     # Cargamos obras a mano para diccionarios
     try:
         with open("archivos/obras.json", "r", encoding="utf-8") as f:
@@ -234,24 +265,22 @@ def reporte_cruzado_usuarios_obras():
     for u in users:
         u_id = u[0]
         u_nom = u[1]
-        
+
         # NUEVO: Lista por comprensión con lógica cruzada
         # Obtenemos los nombres de las obras que este usuario reservó
         obras_reservadas = [
-            dict_obras.get(r[2], "Desconocida") 
-            for r in res 
-            if r[0] == u_id
+            dict_obras.get(r[2], "Desconocida") for r in res if r[0] == u_id
         ]
-        
+
         # Usamos set para quitar duplicados si vio la misma obra 2 veces
         obras_unicas = set(obras_reservadas)
-        
+
         if obras_unicas:
             print(f"[Usuario] {u_nom} (ID: {u_id}) vió:")
             for obra in obras_unicas:
                 print(f"   -> {obra}")
         else:
             print(f"[Usuario] {u_nom} (ID: {u_id}) no tiene reservas.")
-            
+
     print("\n-----------------------------------------")
     input("Presione ENTER para volver.")
