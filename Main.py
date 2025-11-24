@@ -1,9 +1,11 @@
+import time
+
 from obras import *
 from funciones import *
 from reservas import *
 from usuarios import *
 from utilidades import *
-import time
+
 
 # ----------------------------------------------------------------------------------------------
 # NUEVO: LOGIN
@@ -13,7 +15,7 @@ def login():
     print("========================================")
     print("      SISTEMA DE GESTIÓN DE TEATRO      ")
     print("========================================")
-    
+
     intentos = 3
     while intentos > 0:
         user = input("Usuario: ").strip()
@@ -27,9 +29,10 @@ def login():
         else:
             intentos -= 1
             print(f"Credenciales incorrectas. Intentos restantes: {intentos}")
-    
+
     print("Se han agotado los intentos. Cerrando sistema.")
     return False
+
 
 # ----------------------------------------------------------------------------------------------
 # CUERPO PRINCIPAL
@@ -43,7 +46,6 @@ def main():
     # Inicialización de variables
     # -------------------------------------------------
     limpiar_terminal()
-    
 
     # -------------------------------------------------
     # Bloque de menú
@@ -99,7 +101,9 @@ def main():
                     if opcion in [str(i) for i in range(0, opciones + 1)]:
                         break
                     else:
-                        input("Opción inválida. Presione ENTER para volver a seleccionar.")
+                        input(
+                            "Opción inválida. Presione ENTER para volver a seleccionar."
+                        )
                 print()
 
                 if opcion == "0":
@@ -140,13 +144,14 @@ def main():
                     if opcion in [str(i) for i in range(0, opciones + 1)]:
                         break
                     else:
-                        input("Opción inválida. Presione ENTER para volver a seleccionar.")
+                        input(
+                            "Opción inválida. Presione ENTER para volver a seleccionar."
+                        )
                 print()
 
                 if opcion == "0":
                     break
                 elif opcion == "1":
-                    # NUEVO: Llamamos a la función que muestra nombres de obras
                     mostrar_funciones_con_nombres()
                 elif opcion == "2":
                     crear_funcion()
@@ -179,7 +184,9 @@ def main():
                     if opcion in [str(i) for i in range(0, opciones + 1)]:
                         break
                     else:
-                        input("Opción inválida. Presione ENTER para volver a seleccionar.")
+                        input(
+                            "Opción inválida. Presione ENTER para volver a seleccionar."
+                        )
                 print()
 
                 if opcion == "0":
@@ -210,7 +217,7 @@ def main():
                     print("[5] Mostrar promedio de edad de Usuarios en la funcion")
                     print("[6] Usuarios con mas Reservas")
                     print("[7] Top tres usuarios mas jovenes")
-                    print("[8] Reporte Cruzado (Usuarios y sus Obras)") # NUEVO
+                    print("[8] Reporte Cruzado (Usuarios y sus Obras)")  # NUEVO
                     print("---------------------------")
                     print("[0] Volver al menú anterior")
                     print("---------------------------")
@@ -220,14 +227,19 @@ def main():
                     if opcion in [str(i) for i in range(0, opciones + 1)]:
                         break
                     else:
-                        input("Opción inválida. Presione ENTER para volver a seleccionar.")
+                        input(
+                            "Opción inválida. Presione ENTER para volver a seleccionar."
+                        )
                 print()
 
                 if opcion == "0":
                     break
                 elif opcion == "1":
                     lista_de_usuarios = leer_usuarios()
-                    mostrar_matriz(lista_de_usuarios, ("ID Usuario", "Nombre", "Email", "Teléfono", "Edad"))
+                    mostrar_matriz(
+                        lista_de_usuarios,
+                        ("ID Usuario", "Nombre", "Email", "Teléfono", "Edad"),
+                    )
                 elif opcion == "2":
                     crear_usuario()
                 elif opcion == "3":
@@ -241,9 +253,10 @@ def main():
                 elif opcion == "7":
                     topTresUsuariosMasJovenes()
                 elif opcion == "8":
-                    reporte_cruzado_usuarios_obras() # NUEVO
+                    reporte_cruzado_usuarios_obras()  # NUEVO
 
         print("\n\n")
+
 
 if __name__ == "__main__":
     main()
