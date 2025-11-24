@@ -1,17 +1,19 @@
 import os, time
 
+
 def mostrar_matriz(matriz, encabezados):
     print()
     for titulo in encabezados:
-        print(f"{titulo:<20}", end="")
+        print(f"{titulo:<30}", end="")
     print()
-    print("-" * (20 * len(encabezados)))
+    print("-" * (30 * len(encabezados)))
     for fila in matriz:
         for dato in fila:
-            print(f"{str(dato):<20}", end="")
+            print(f"{str(dato):<30}", end="")
         print()
     print()
     input("Presione ENTER para continuar")
+
 
 def limpiar_terminal(segundos=0):
     time.sleep(segundos)
@@ -19,6 +21,7 @@ def limpiar_terminal(segundos=0):
         os.system("cls")
     else:
         os.system("clear")
+
 
 def ingreso_entero(mensaje="Ingrese un número entero: ", vacio=False):
     while True:
@@ -31,7 +34,10 @@ def ingreso_entero(mensaje="Ingrese un número entero: ", vacio=False):
                 raise ValueError
             return valor_entero
         except ValueError:
-            print("Error: Ingreso inválido, solamente ingresar numeros enteros positivos")
+            print(
+                "Error: Ingreso inválido, solamente ingresar numeros enteros positivos"
+            )
+
 
 def ingreso_texto(mensaje="Ingrese un texto: ", vacio=False):
     while True:
@@ -40,6 +46,7 @@ def ingreso_texto(mensaje="Ingrese un texto: ", vacio=False):
             print("No puede estar vacío.")
         else:
             return texto
+
 
 def confirmacion(mensaje="Seguro? [Y/n]: "):
     respuesta = input(mensaje).strip().lower()
