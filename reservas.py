@@ -105,26 +105,23 @@ def mostrar_reservas(reservas_):
     encabezados = ["Usuario", "NR", "ID Obra", "Cant", "Butacas", "Precio", "Total"]
     mostrar_matriz(reservas_, encabezados)
 
-def init_estado_desde_reservas():
+def init_estado_desde_reservas(id_funcion):
     reservas = leer_reservas()
-    # Resetear matriz
-    for f in range(len(butacas_estado)):
-        for c in range(len(butacas_estado[f])):
-            butacas_estado[f][c] = "0"
 
-    i = 0
-    while i < len(reservas):
-        butacas_str = reservas[i][4]
-        partes = butacas_str.split(",")
-        j = 0
-        while j < len(partes):
-            buscada = partes[j].strip().upper()
-            pos = buscar_pos(buscada)
-            if pos is not None:
-                ff, cc = pos
-                butacas_estado[ff][cc] = "X"
-            j += 1
-        i += 1
+    # Poner todo en "0"
+    for i in range(8):#i fila
+        for j in range(8):# j columna
+            butacas_estado[i][j] = "0"
+
+    #marco solo butacas de la función
+    for r in reservas:
+        if r[2] == id_funcion:   # filtra por obra
+            for b in r[4].split(","):
+                pos = buscar_pos(b.strip().upper())
+                if pos:
+                    i, j = pos
+                    butacas_estado[i][j] = "X"
+
 
 def _construir_ids_obras():
     try:
@@ -138,7 +135,6 @@ def _construir_ids_obras():
 
 def crear_reserva():
     # Aseguramos que la matriz esté actualizada con las 'X' antes de empezar
-    init_estado_desde_reservas()
     
     usuario = ingreso_entero("Coloque el id de usuario: ")
     ultimo_nr = _obtener_ultimo_id(ARCHIVO_RESERVAS, id_columna=1)
@@ -158,13 +154,19 @@ def crear_reserva():
         else:
             print("ID inexistente.")
 
+    for i in range(8):
+        for j in range(8):
+            butacas_estado[i][j] = "0"
+
+    #cargar las butacas reservadas SOLO de esa obra
+    init_estado_desde_reservas(id_obra_valido)
+    mostrar_butacas()
+
     cant = ingreso_entero("Cuántas entradas deseas reservar: ")
     while cant <= 0:
         cant = ingreso_entero("Debe ser positivo: ")
 
-    # NUEVO: Mostramos las butacas con las ocupadas ya marcadas
-    mostrar_butacas()
-    
+
     butacas_elegidas = []
     i = 0
     while i < cant:

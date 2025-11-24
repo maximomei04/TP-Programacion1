@@ -33,5 +33,26 @@
         "Precio": 17000,
         "Categoria": "Drama",
         "Duracion": 110
+    },
+    {
+        "ID": 6,
+        "Nombre": "Sushi",
+        "Precio": 10,
+        "Categoria": "Comida",
+        "Duracion": 23
+    },
+    {
+        "ID": 7,
+        "Nombre": "Sol",
+        "Precio": 12,
+        "Categoria": "Dfdsf",
+        "Duracion": 34
+    },
+    {
+        "ID": 8,
+        "Nombre": "Pol",
+        "Precio": 56000,
+        "Categoria": "Accion",
+        "Duracion": 10
     }
 ]

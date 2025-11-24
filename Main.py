@@ -44,9 +44,7 @@ def main():
     # -------------------------------------------------
     limpiar_terminal()
     
-    # Inicializamos las butacas ocupadas leyendo el archivo
-    init_estado_desde_reservas()
-    
+
     # -------------------------------------------------
     # Bloque de menú
     # -------------------------------------------------
