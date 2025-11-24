@@ -46,7 +46,7 @@ def mostrar_obras(ruta, mensaje="Presione ENTER para continuar", tipo=None):
         print(f"{diccionario['ID']:<5}", end=" | ")
         print(f"{diccionario['Nombre']:<30}", end=" | ")
         print(f"${diccionario['Precio']:<9}", end=" | ")
-        print(f"{cat_mostrar:<30}", end=" | ")
+        print(f"{diccionario['Categoria']:<30}", end=" | ")
         print(f"{diccionario['Duracion']} min")
     print()
 
