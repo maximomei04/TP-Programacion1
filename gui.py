@@ -3,6 +3,7 @@ import json
 from tkinter import *
 from tkinter import messagebox, simpledialog
 
+from obras import cargar_json, modificar_json
 from utilidades import *
 from funciones import *
 
