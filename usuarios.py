@@ -276,7 +276,7 @@ def reporte_cruzado_usuarios_obras():
         obras_unicas = set(obras_reservadas)
 
         if obras_unicas:
-            print(f"[Usuario] {u_nom} (ID: {u_id}) vió:")
+            print(f"[Usuario] {u_nom} (ID: {u_id}) tiene reservado:")
             for obra in obras_unicas:
                 print(f"   -> {obra}")
         else:

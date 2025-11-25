@@ -215,7 +215,6 @@ def crear_reserva():
     input("Presione ENTER para continuar.")
 
 def modificar_reserva():
-    # Lógica idéntica a tu original
     nr_modificar = ingreso_entero("Ingrese el número de reserva que desea modificar: ")
     encontrado = False
     try:

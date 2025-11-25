@@ -1,7 +1,8 @@
-import json
+import json, os
 
 from utilidades import *
 from funciones import *
+from reservas import borrar_reserva
 
 
 def cargar_json(ruta):
@@ -161,6 +162,34 @@ def modificar_obra(ruta):
     limpiar_terminal()
 
 
+def eliminar_reserva_por_obra(id_borrar, ruta="archivos/reservas.txt"):
+    try:
+        reserva_encontrada = False
+
+        with open(ruta, "r", encoding="utf-8") as archivo, open(
+            "archivos/reservas_temp.txt", "w", encoding="utf-8"
+        ) as archivo_temp:
+            for linea in archivo:
+                columnas = linea.split(";")
+                if columnas[2].strip() != str(id_borrar):
+                    archivo_temp.write(linea)
+                else:
+                    reserva_encontrada = True
+
+        if reserva_encontrada:
+            os.remove(ruta)
+            os.rename("archivos/reservas_temp.txt", ruta)
+            print("Reservas asociadas eliminadas")
+        else:
+            os.remove("archivos/reservas_temp.txt")
+            input("No hay reservas a eliminar. ENTER para continuar")
+
+    except (FileNotFoundError, OSError) as error:
+        print(f"Error: {error}")
+    except Exception as e:
+        print(f"Error: {e}")
+
+
 def borrar_obra(ruta):
     obras = cargar_json(ruta)
     limpiar_terminal()
@@ -194,6 +223,8 @@ def borrar_obra(ruta):
         print("Obra y sus funciones asociadas eliminadas.")
     else:
         print("No se eliminó ninguna obra.")
+
+    eliminar_reserva_por_obra(id_borrar)
 
     input("Presione ENTER para continuar.")
     limpiar_terminal()
