@@ -1,11 +1,10 @@
 import json, os
 
-from utilidades import *
-from funciones import *
-from reservas import borrar_reserva
+from utilidades import limpiar_terminal, ingreso_entero, ingreso_texto, confirmacion
+from funciones import eliminar_funciones_por_obra
 
 
-def cargar_json(ruta):
+def cargar_json(ruta: str):
     try:
         with open(ruta, "r", encoding="UTF-8") as archivo:
             return json.load(archivo)
@@ -15,7 +14,7 @@ def cargar_json(ruta):
         print(f"Error: {e}")
 
 
-def modificar_json(ruta, cambios):
+def modificar_json(ruta: str, cambios: list[dict]) -> None:
     try:
         with open(ruta, "w", encoding="UTF-8") as archivo:
             json.dump(cambios, archivo, ensure_ascii=False, indent=4)
@@ -25,18 +24,19 @@ def modificar_json(ruta, cambios):
         print(f"Error: {e}")
 
 
-def mostrar_obras(ruta, mensaje="Presione ENTER para continuar", tipo=None):
+def mostrar_obras(
+    ruta: str, mensaje="Presione ENTER para continuar", tipo=None
+) -> None | str | int:
     """Muestra las obras y opcionalmente devuelve un entero o cadena"""
     lista = cargar_json(ruta)
     limpiar_terminal()
 
     if not lista:
         input("No hay obras a mostrar. Presione ENTER para continuar")
-        return
+        return None
 
     print()
-    titulo = "OBRAS"
-    print(titulo.center(150, "-"))
+    print(f"{'OBRAS':-^150}")
 
     print(  # Cabecera manual
         f"{'ID':<5} | {'Nombre':<30} | {'Precio':<10} | {'Categoría':<30} | {'Duración':<10}"
@@ -67,7 +67,7 @@ def mostrar_obras(ruta, mensaje="Presione ENTER para continuar", tipo=None):
     return texto
 
 
-def agregar_obras(ruta):
+def agregar_obras(ruta: str):
     obras = cargar_json(ruta)
     limpiar_terminal()
 
@@ -104,11 +104,8 @@ def agregar_obras(ruta):
     limpiar_terminal()
 
 
-def lista_IDs(lista_dict):
-    IDs = []
-    for i in lista_dict:
-        IDs.append(i["ID"])
-    return IDs
+def lista_ids(lista_dict: list[dict]) -> list:
+    return [i["ID"] for i in lista_dict]
 
 
 def modificar_campo(obras, indice, campo, mensaje, funcion_ingreso):
@@ -120,7 +117,7 @@ def modificar_campo(obras, indice, campo, mensaje, funcion_ingreso):
         obras[indice][campo] = nuevo_valor
 
 
-def modificar_obra(ruta):
+def modificar_obra(ruta: str):
     obras = cargar_json(ruta)
     limpiar_terminal()
 
@@ -135,26 +132,26 @@ def modificar_obra(ruta):
         if id_mod != "":
             break
 
-    IDs = lista_IDs(obras)
+    ids = lista_ids(obras)
 
-    if id_mod not in IDs:
+    if id_mod not in ids:
         input(
             "No se encontró ninguna obra con el ID ingresado.\nPresione ENTER para continuar."
         )
         return
 
-    indice = IDs.index(id_mod)
+    indice = ids.index(id_mod)
     modificar_campo(
         obras, indice, "Nombre", "Nuevo Nombre (ENTER para dejar '", ingreso_texto
     )
     modificar_campo(
-        obras, indice, "Precio", "Nuevo Precio (ENTER para dejar '", ingreso_texto
+        obras, indice, "Precio", "Nuevo Precio (ENTER para dejar '", ingreso_entero
     )
     modificar_campo(
         obras, indice, "Categoria", "Nueva Categoria (ENTER para dejar '", ingreso_texto
     )
     modificar_campo(
-        obras, indice, "Duracion", "Nueva Duracion (ENTER para dejar '", ingreso_texto
+        obras, indice, "Duracion", "Nueva Duracion (ENTER para dejar '", ingreso_entero
     )
 
     modificar_json(ruta, obras)
@@ -201,15 +198,15 @@ def borrar_obra(ruta):
     id_borrar = mostrar_obras(
         "archivos/obras.json", "Ingrese el ID de la obra a borrar: ", int
     )
-    IDs = lista_IDs(obras)
+    ids = lista_ids(obras)
 
-    if id_borrar not in IDs:
+    if id_borrar not in ids:
         input(
             "No se encontró ninguna obra con el ID ingresado.\nPresione ENTER para continuar."
         )
         return
 
-    indice = IDs.index(id_borrar)
+    indice = ids.index(id_borrar)
 
     if confirmacion(
         f'¿Seguro que quiere borrar "{obras[indice]["Nombre"]}" y sus FUNCIONES asociadas? (S/n): '
@@ -230,7 +227,7 @@ def borrar_obra(ruta):
     limpiar_terminal()
 
 
-def estadisticas_precios_obras(ruta):
+def estadisticas_precios_obras(ruta: str):
     obras = cargar_json(ruta)
     limpiar_terminal()
 
@@ -239,15 +236,15 @@ def estadisticas_precios_obras(ruta):
         return
 
     # Lista por comprensión para extraer precios
-    precios = [obra["Precio"] for obra in obras]
+    precios: list = [obra["Precio"] for obra in obras]
 
     minimo = minimo_lista(precios)
-    promedio_val = suma_lista(precios) // len(precios)
+    promedio = suma_lista(precios) // len(precios)
     maximo = max(precios)
 
     input(
         f"Precio Mínimo: ${minimo}\n"
-        f"Precio Promedio: ${promedio_val}\n"
+        f"Precio Promedio: ${promedio}\n"
         f"Precio Máximo: ${maximo}\n"
         "\nPresione ENTER para continuar"
     )
